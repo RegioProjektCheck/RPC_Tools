@@ -4,6 +4,7 @@
 import arcpy
 import os
 from rpctools.utils.params import Tool
+from rpctools.utils import wingdbstub
 from rpctools.analyst.verkehr.otp_router import Point, OTPRouter
 import pandas as pd
 
@@ -54,8 +55,8 @@ class Routing(Tool):
             arcpy.AddMessage(
                 u"Suche Routen ausgehend von Teilfläche {}...".format(source_id))
             x_coord, y_coord = shape
-            if not trips:
-                continue
+            #if not trips:
+                #continue
             o.areas.add_area(source_id, trips=trips)
             # ? lat = y lon = x
             source = Point.from_xy(y=y_coord, x=x_coord,
@@ -132,8 +133,8 @@ class Routing(Tool):
         return data_tfl
 
 if __name__ == '__main__':
-    o = OTPRouter(r'F:\Projekte SH\RPC Tools\3 Benutzerdefinierte Projekte\0908\FGDB_Verkehr.gdb')
-    source = Point(lat=53.5, lon=9.589)
+    o = OTPRouter(r'C:\Users\ggr\Desktop\RPC Projekte\neu\FGDB_Verkehr.gdb')
+    source = Point(lat=53.32, lon=9.83)
     source_id = 0
     destinations = o.create_circle(source, dist=1000, n_segments=12)
     o.dist = 1000
@@ -158,5 +159,5 @@ if __name__ == '__main__':
     o.create_polyline_features()
     o.create_node_features()
     o.create_transfer_node_features()
-    o.calc_layer_extent()
+    o.set_layer_extent()
     print(o.extent)

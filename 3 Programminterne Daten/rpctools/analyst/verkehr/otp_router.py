@@ -173,14 +173,14 @@ class Nodes(object):
         route : int
 
         """
-        last_node = None
+        previous_node = None
         node_ids = []
         for coords in coord_list:
             node = self.get_or_set_node_from_coord(coords)
-            if last_node:
-                link = self.links.add_vertex(last_node, node)
+            if previous_node:
+                link = self.links.add_vertex(previous_node, node)
                 link.add_route(route.route_id)
-            last_node = node
+            previous_node = node
             node_ids.append(node.node_id)
         route.node_ids = np.array(node_ids, dtype='i4')
 
@@ -597,7 +597,6 @@ class OTPRouter(object):
                                directed=True,
                                return_predecessors=False,
                                indices=self.routes.source_nodes,
-                               #limit=meters,
                                )
         dist_vector = dist_matrix.min(axis=0)
         self.set_link_distance(dist_vector)
@@ -688,8 +687,8 @@ class OTPRouter(object):
         coords = [tn.get_geom() for tn in self.transfer_nodes.itervalues()]
         transformed = [to_project_srid(point.X, point.Y , config.epsg)
                        for point in coords]
-        x_coords = [transformed[0] for point in coords]
-        y_coords = [transformed[1] for point in coords]
+        x_coords = [point[0] for point in transformed]
+        y_coords = [point[1] for point in transformed]
         x_max = max(x_coords)
         x_min = min(x_coords)
         y_max = max(y_coords)
