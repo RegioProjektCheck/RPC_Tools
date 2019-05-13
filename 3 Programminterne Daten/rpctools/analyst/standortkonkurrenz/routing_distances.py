@@ -36,7 +36,7 @@ def dilate_raster(array, kernel_size=3, threshold=120):
         ret, np.nanmedian, (kernel_size, kernel_size), origin=(o, o),
         mode='reflect')
     a = array.copy()
-    thresh_exceeded_and_not_nan = thresh_exceeded & ~ np.isnan(filtered) 
+    thresh_exceeded_and_not_nan = thresh_exceeded & ~ np.isnan(filtered)
     fill_values = filtered[thresh_exceeded]
     a[thresh_exceeded_and_not_nan] = filtered[thresh_exceeded_and_not_nan]
     return a
@@ -57,7 +57,7 @@ class RasterManagement(object):
             raster_file, 'CELLSIZEX').getOutput(0).replace(',', '.'))
         self.cellHeight = float(arcpy.GetRasterProperties_management(
             raster_file, 'CELLSIZEY').getOutput(0).replace(',', '.'))
-        
+
         self.raster_values = dilate_raster(
             arcpy.RasterToNumPyArray(raster_file),
             threshold=unreachable
@@ -68,7 +68,7 @@ class RasterManagement(object):
             raise Exception('A raster-file has to be loaded first!')
         for point in points:
             if point.epsg != self.srid:
-                point.transform(self.srid) 
+                point.transform(self.srid)
             mapped_x = int(abs(point.x - self.raster_origin.x) / self.cellWidth)
             mapped_y = int(abs(point.y - self.raster_origin.y) / self.cellHeight)
             self.point_raster_map[point.id] = (mapped_x, mapped_y)
@@ -138,18 +138,18 @@ class DistanceRouting(object):
         start = time.time()
         raster = RasterManagement()
         raster.load(dist_raster)
-        print('filtering raster {}s'.format(time.time() - start))        
+        print('filtering raster {}s'.format(time.time() - start))
         start = time.time()
         raster.register_points(destinations)
         for i, dest in enumerate(destinations):
             value = raster.get_value(dest)
             distances[i] = (value / 60.) * kmh * 1000 if value < 120 else -1
         print('mapping {}s'.format(time.time() - start))
-    
+
         arcpy.Delete_management(dist_raster)
         return distances
 
-    def _request_dist_raster(self, origin, kmh=30):        
+    def _request_dist_raster(self, origin, kmh=30):
         if origin.epsg != self.epsg:
             origin.transform(self.epsg)
         params = {
@@ -183,8 +183,8 @@ class DistanceRouting(object):
             arcpy.AddError(err_msg)
             return None
         print('request post {}s'.format(time.time() - start))
-        
-        try: 
+
+        try:
             id = r.json()['id']
         except:
             arcpy.AddError(err_msg)
@@ -211,6 +211,13 @@ class DistanceRouting(object):
         return out_raster
 
 if __name__ == "__main__":
+    class MockupOrigin(object):
+        x = 9.74
+        y = 53.28
+        epsg = 4326
+    origin = MockupOrigin()
+    router = DistanceRouting()
+    router._request_dist_raster(origin, kmh=10)
     for i in range(100):
         start = time.time()
         array = np.ones((100, 100))

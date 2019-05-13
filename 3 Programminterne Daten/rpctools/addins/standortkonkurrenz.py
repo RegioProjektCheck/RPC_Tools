@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import arcpy
 
+from rpctools.utils.spatial_lib import from_project_srid
 from rpctools.addins.common import ToolboxButton, folders, config
 from rpctools.addins.outputs import MaerkteAnzeigen, ZentrenAnzeigen
 from rpctools.utils.params import DummyTbx
@@ -76,7 +77,7 @@ class MarktBearbeiten(ToolboxButton):
         self.show_message()
 
     def onMouseDownMap(self, x, y, button, shift):
-        config.active_coord = (x, y)
+        config.active_coord = from_project_srid(x, y, config.epsg)
         super(MarktBearbeiten, self).open()
 
 
@@ -170,7 +171,7 @@ class ZentrumBearbeiten(ToolboxButton):
         self.show_message()
 
     def onMouseDownMap(self, x, y, button, shift):
-        config.active_coord = (x, y)
+        config.active_coord = from_project_srid(x, y, config.epsg)
         super(ZentrumBearbeiten, self).open()
 
 

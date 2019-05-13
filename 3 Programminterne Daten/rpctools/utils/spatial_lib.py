@@ -8,7 +8,7 @@ import requests
 import numpy as np
 from os.path import join, split
 import sys
-    
+
 def remove_duplicates(features, id_field, match_field='', where='', distance=100):
     '''remove point features matched by where clause from the given feature-class
     if other features are within given distance
@@ -43,10 +43,10 @@ def remove_duplicates(features, id_field, match_field='', where='', distance=100
     return n_duplicates
 
 def features_to_raster(feature_class, outfile, field, template=None,
-                       transform_method=None, 
+                       transform_method=None,
                        where=''):
     '''convert a feature-class to a raster-file
-    
+
     template : str, optional
         full path to template raster, outfput file will get same projection and
         raster size
@@ -67,6 +67,22 @@ def features_to_raster(feature_class, outfile, field, template=None,
     arcpy.Delete_management(where_tmp)
     arcpy.Delete_management(proj_tmp)
     return outfile
+
+def get_project_epsg():
+    mxd = arcpy.mapping.MapDocument("CURRENT")
+    df = arcpy.mapping.ListDataFrames(mxd)[0]
+    epsg = df.spatialReference.factoryCode
+    return epsg
+
+def from_project_srid(x, y, target_srid):
+    project_epsg = get_project_epsg()
+    point = Point(x, y, epsg=project_epsg)
+    return point.transform(target_srid)
+
+def to_project_srid(x, y, srid):
+    project_epsg = get_project_epsg()
+    point = Point(x, y, epsg=srid)
+    return point.transform(project_epsg)
 
 
 class Point(object):
@@ -99,6 +115,7 @@ class Point(object):
         self.x = x
         self.y = y
         return (x, y)
+
 
 def extent_to_bbox(self, extent, epsg, boundary_size = 0.00):
     '''return a square bounding box with given centroid in center and dimension
@@ -142,16 +159,16 @@ def minimal_bounding_poly(in_features, where=''):
         in_features, ws_tmp, split(feat_tmp)[1],
         where_clause=where)
     arcpy.MultipartToSinglepart_management(feat_tmp, feat_single)
-    arcpy.MinimumBoundingGeometry_management(feat_single, feat_minimal, 
+    arcpy.MinimumBoundingGeometry_management(feat_single, feat_minimal,
                                              "RECTANGLE_BY_AREA", "NONE")
     arcpy.Union_analysis(feat_minimal, out_union, gaps="NO_GAPS")
-    arcpy.Dissolve_management(out_union, out_features, "", "", 
+    arcpy.Dissolve_management(out_union, out_features, "", "",
                               "MULTI_PART", "DISSOLVE_LINES")
     #arcpy.FillGaps_production(out_features)
     cursor = arcpy.da.SearchCursor(out_features, ['SHAPE@'])
     polygon = cursor.next()[0]
     del(cursor)
-    
+
     del_tmp()
     return polygon
 
@@ -358,7 +375,7 @@ def assign_groessenklassen():
             gr_klasse = match[0]
             gem_table.loc[index, gr_col] = gr_klasse
     tbx.dataframe_to_table('bkg_gemeinden', gem_table, ['RS'],
-                           workspace=workspace, is_base_table=True, 
+                           workspace=workspace, is_base_table=True,
                            upsert=False)
 
 def get_extent(tablename, workspace, where=''):

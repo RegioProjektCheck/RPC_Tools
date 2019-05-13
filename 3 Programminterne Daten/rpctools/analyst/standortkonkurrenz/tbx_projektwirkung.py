@@ -13,7 +13,6 @@ from rpctools.utils.encoding import encode
 from rpctools.analyst.standortkonkurrenz.zensus import Zensus, ZensusCell
 from rpctools.analyst.standortkonkurrenz.routing_distances import DistanceRouting
 from rpctools.utils.spatial_lib import (get_project_centroid, Point,
-                                        extent_to_bbox, get_extent,
                                         features_to_raster)
 from rpctools.utils.config import Folders
 from rpctools.analyst.standortkonkurrenz.sales import Sales
@@ -78,7 +77,7 @@ class ProjektwirkungMarkets(Tool):
                                   zoom=False)
         self.output.hide_layer(u'Ausgewählte Gemeinden im Betrachtungsraum')
         self.output.hide_layer(u'Nicht ausgewählte Gemeinden')
-        self.output.add_layer(group_layer, layer_vb, fc_zentren, visible=False, 
+        self.output.add_layer(group_layer, layer_vb, fc_zentren, visible=False,
                               template_folder=folder, zoom=False)
         self.output.add_layer(group_layer, layer_gem, fc_zentren,
                               template_folder=folder, zoom=False)
@@ -98,14 +97,14 @@ class ProjektwirkungMarkets(Tool):
     def run(self):
         folders = Folders(self.par)
         self.recalculate = self.par.recalculate.value
-        
+
         # set "Gemeinden" as selected based on selection of "Verwaltungsgemeinschaften"
         selected_rs = self.parent_tbx.query_table(
             'Zentren', columns=['RS'],
             where='"Auswahl" <> 0 and nutzerdefiniert = -1')
         self.parent_tbx.update_table('Zentren', {'Auswahl': 0},
                                      where='nutzerdefiniert = 0')
-        
+
         selected_rs = ["'{}'".format(r[0]) for r in selected_rs]
         self.parent_tbx.update_table(
             'Zentren', {'Auswahl': 1},
@@ -232,7 +231,7 @@ class ProjektwirkungMarkets(Tool):
         ags_res = zensus.add_kk_ags(sz_points, project, ags_auswahl)
         # TODO: Update instead of rewrite
         self.zensus_to_db(sz_points)
-        
+
         return ags_res
 
     def get_tfl_points(self, start_id):
@@ -437,7 +436,7 @@ class ProjektwirkungMarkets(Tool):
         arcpy.AddMessage(u'Schreibe Kenngrößen in Datenbank...')
         self.parent_tbx.insert_dataframe_in_table(
             'Beziehungen_Maerkte_Zellen', cells)
-    
+
     def get_markets_in_user_centers(self):
         ''' find markets in user defined centers by spatial joining '''
         tmp_table = os.path.join(arcpy.env.scratchGDB, 'tmp_join')
@@ -458,28 +457,28 @@ class ProjektwirkungMarkets(Tool):
 
     def update_centers(self):
         '''calculate the sales of the defined centers'''
-        
+
         df_markets = self.parent_tbx.table_to_dataframe(
             'Maerkte',
             columns=['id', 'AGS', 'umsatz_planfall', 'umsatz_nullfall', 'vkfl',
                      'vkfl_planfall', 'id_betriebstyp_nullfall',
                      'id_betriebstyp_planfall'])
-        
+
         # Zentralität needs turnovers including new and changed markets
         # copy column for use in Zentralität, as it will be changed in the next step
         df_markets['umsatz_planfall_full'] = df_markets['umsatz_planfall']
-    
+
         # exclude new markets by setting their turnovers to zero
         new_market_idx = df_markets['id_betriebstyp_nullfall'] == 0
         df_markets.loc[new_market_idx, 'umsatz_planfall'] = 0
-        
+
         df_centers = self.parent_tbx.table_to_dataframe(
             'Zentren', columns=['id', 'AGS', 'RS', 'ew', 'kk', 'nutzerdefiniert'])
-        
+
         # ignore turnover changes for existing markets that have been changed
         changed_market_idx = np.logical_and(
             (df_markets['id_betriebstyp_nullfall']
-             != df_markets['id_betriebstyp_planfall']), 
+             != df_markets['id_betriebstyp_planfall']),
             df_markets['id_betriebstyp_nullfall'] != 0)
         df_markets.loc[changed_market_idx, 'umsatz_planfall'] = \
             df_markets.loc[changed_market_idx, 'umsatz_nullfall']
@@ -487,7 +486,7 @@ class ProjektwirkungMarkets(Tool):
         df_centers_res = df_centers.merge(summed, how='left', on='AGS')
         # pandas gives left table suffix '_x' by default after joining
         df_centers_res.rename(columns={'id_x': 'id'}, inplace=True)
-        
+
         # sum up ags based results to rs
         df_ags_res = df_centers_res[df_centers_res['nutzerdefiniert'] == 0]
         df_ags_agg = df_ags_res.groupby('RS')['ew', 'kk', 'umsatz_planfall',
@@ -495,14 +494,14 @@ class ProjektwirkungMarkets(Tool):
                                               'umsatz_planfall_full', 'vkfl',
                                               'vkfl_planfall'].sum()
         # -1 indicate the "Verwaltungsgemeinschaften"
-        rs_idx = df_centers_res['nutzerdefiniert'] == -1 
+        rs_idx = df_centers_res['nutzerdefiniert'] == -1
         for index, row in df_ags_agg.iterrows():
             r_idx = np.logical_and(rs_idx, (df_centers_res['RS'] == index))
             for col in row.keys():
                 df_centers_res.loc[r_idx, col] = row[col]
-        
+
         # get markets in user centers and sum up their values.
-        # this spatial joining could be done for ALL centers instead of joining 
+        # this spatial joining could be done for ALL centers instead of joining
         # by ags (actually it once was before ags centers were selectable), but
         # for having it done fast, it is only applied for user defined centers
         # now
@@ -515,11 +514,11 @@ class ProjektwirkungMarkets(Tool):
             center_idx = df_centers_res['id'] == center_id
             summed = df_markets.loc[mic_idx, sum_cols].sum().values
             df_centers_res.loc[center_idx, sum_cols] = summed
-                
+
         df_centers_res['umsatz_differenz'] = (
             100 * (df_centers_res['umsatz_planfall'] /
                    df_centers_res['umsatz_nullfall']) - 100)
-        
+
         df_centers_res['vkfl_dichte_nullfall'] = (
             df_centers_res['vkfl'] / df_centers_res['ew'])
         df_centers_res['vkfl_dichte_planfall'] = (
@@ -527,7 +526,7 @@ class ProjektwirkungMarkets(Tool):
         df_centers_res['vkfl_dichte_differenz'] = (
             df_centers_res['vkfl_dichte_planfall']
             - df_centers_res['vkfl_dichte_nullfall'])
-        
+
         df_centers_res['zentralitaet_planfall'] = (
             100 * df_centers_res['umsatz_planfall_full'] / df_centers_res['kk'])
         df_centers_res['zentralitaet_nullfall'] = (
@@ -535,7 +534,7 @@ class ProjektwirkungMarkets(Tool):
         df_centers_res['zentralitaet_differenz'] = (
             df_centers_res['zentralitaet_planfall']
             - df_centers_res['zentralitaet_nullfall'])
-        
+
         df_centers_res.replace([np.inf, -np.inf], np.nan, inplace=True)
         df_centers_res.fillna(0, inplace=True)
         self.parent_tbx.dataframe_to_table('Zentren', df_centers_res,

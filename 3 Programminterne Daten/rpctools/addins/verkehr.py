@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from rpctools.addins.common import ToolboxButton, folders, config
+from rpctools.utils.spatial_lib import from_project_srid
 from rpctools.addins.outputs import AnbindungspunkteAnzeigen
 
 __all__ = ['InitialRouting', 'RoutingSettings',
@@ -42,11 +43,11 @@ class Anbindungspunkt(ToolboxButton):
         self.shape = 'NONE'
         self.cursor = 3
         self.output = AnbindungspunkteAnzeigen()
-        
+
     def onClick(self, coord=None):
         self.output.show()
         self.show_message()
 
     def onMouseDownMap(self, x, y, button, shift):
-        config.active_coord = (x, y)
+        config.active_coord = from_project_srid(x, y, config.epsg)
         super(Anbindungspunkt, self).open()

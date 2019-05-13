@@ -9,6 +9,8 @@ from scipy.sparse import csc_matrix
 from pyproj import Proj, transform
 from scipy.sparse.csgraph import dijkstra
 from rpctools.utils.config import Folders
+from rpctools.addins.common import config
+from rpctools.utils.spatial_lib import to_project_srid
 import numpy as np
 import os
 
@@ -684,8 +686,10 @@ class OTPRouter(object):
 
     def set_layer_extent(self):
         coords = [tn.get_geom() for tn in self.transfer_nodes.itervalues()]
-        x_coords = [point.X for point in coords]
-        y_coords = [point.Y for point in coords]
+        transformed = [to_project_srid(point.X, point.Y , config.epsg)
+                       for point in coords]
+        x_coords = [transformed[0] for point in coords]
+        y_coords = [transformed[1] for point in coords]
         x_max = max(x_coords)
         x_min = min(x_coords)
         y_max = max(y_coords)

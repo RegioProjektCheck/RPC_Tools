@@ -4,6 +4,8 @@ import arcpy
 import os
 
 from rpctools.utils.params import Tbx, Tool
+from rpctools.addins.common import config
+from rpctools.utils.spatial_lib import to_project_srid
 from rpctools.utils.encoding import encode
 from rpctools.definitions.projektverwaltung.tbx_teilflaechen_verwalten \
      import TbxFlaechendefinition
@@ -89,8 +91,10 @@ class SetSource(Tool):
         zoom_border : float, optional
             expands the extend by a factor
         """
-        x_coords = [point[0][0] for point in points]
-        y_coords = [point[0][1] for point in points]
+        transformed = [to_project_srid(point[0][0], point[0][1], config.epsg)
+                       for point in points]
+        x_coords = [point[0] for point in transformed]
+        y_coords = [point[1] for point in transformed]
         x_max = max(x_coords)
         x_min = min(x_coords)
         y_max = max(y_coords)

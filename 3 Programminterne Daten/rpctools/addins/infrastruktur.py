@@ -3,6 +3,7 @@ import arcpy
 import pythonaddins
 import os
 
+from rpctools.utils.spatial_lib import from_project_srid
 from rpctools.addins.common import ToolboxButton, folders, config
 from rpctools.addins.outputs import ErschliessungsnetzeAnzeigen
 from rpctools.utils.output import ArcpyEnv
@@ -127,7 +128,7 @@ class InfrastructurePointTool(InfrastructureDrawingTool, Beschreibung):
                 'Bezeichnung': desc,
                 }
         )
-        config.active_coord = (x, y)
+        config.active_coord = from_project_srid(x, y, config.epsg)
         self._open()
 
     def onClick(self):
@@ -203,7 +204,7 @@ class PunktMassnahmeBearbeiten(ToolboxButton):
         self.show_message()
 
     def onMouseDownMap(self, x, y, button, shift):
-        config.active_coord = (x, y)
+        config.active_coord = from_project_srid(x, y, config.epsg)
         super(PunktMassnahmeBearbeiten, self).open()
 
 

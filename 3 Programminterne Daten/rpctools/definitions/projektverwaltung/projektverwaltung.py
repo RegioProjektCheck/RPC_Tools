@@ -341,7 +341,7 @@ class ProjektAnlegen(Projektverwaltung):
             arcpy.Delete_management(fc_clipped)
         arcpy.CopyFeatures_management([circleGeom], fc_bbox)
         arcpy.Clip_analysis(vg, fc_bbox, fc_clipped)
-        
+
         cursor = arcpy.da.SearchCursor(fc_clipped, ['SHAPE@', 'GEN', 'RS'])
         id = 1
         rs_list = []
@@ -368,13 +368,13 @@ class ProjektAnlegen(Projektverwaltung):
                     'RS': rs
                 })
             id += 1
-        
+
         del cursor
         arcpy.Delete_management(fc_bbox)
         arcpy.Delete_management(fc_clipped)
-        
+
         rs_project = None
-        
+
         cursor = arcpy.da.SearchCursor(gemeinden, ['SHAPE@', 'GEN', 'AGS', 'RS'])
         for shape, name, ags, rs in cursor:
             cut_rs = rs[:9]
@@ -396,16 +396,16 @@ class ProjektAnlegen(Projektverwaltung):
                         'AGS': ags,
                         'RS': cut_rs,
                     }
-                ) 
+                )
             id += 1
-        
+
         # preselect the VG the project is in
         if rs_project:
             self.parent_tbx.update_table(
                 'Zentren', {'Auswahl': -1},  # -1 : not unselectable
                 where='"RS" = \'{}\''.format(rs_project),
                 workspace='FGDB_Standortkonkurrenz_Supermaerkte.gdb')
-            
+
         print('Dauer: {}'.format(time.time() - start))
 
 
