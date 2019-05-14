@@ -76,11 +76,17 @@ def get_project_epsg():
 
 def from_project_srid(x, y, target_srid):
     project_epsg = get_project_epsg()
+    # no project -> keep projection
+    if not project_epsg:
+        return (x, y)
     point = Point(x, y, epsg=project_epsg)
     return point.transform(target_srid)
 
 def to_project_srid(x, y, srid):
     project_epsg = get_project_epsg()
+    # no project -> keep projection
+    if not project_epsg:
+        return (x, y)
     point = Point(x, y, epsg=srid)
     return point.transform(project_epsg)
 
