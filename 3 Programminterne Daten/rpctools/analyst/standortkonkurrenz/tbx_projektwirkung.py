@@ -67,9 +67,16 @@ class ProjektwirkungMarkets(Tool):
             arcpy.Delete_management(fp)
             template = self.folders.ZENSUS_RASTER_FILE
             arcpy.Delete_management(fp)
-            raster_file = features_to_raster(
-                table, fp, 'kk_bindung_planfall', template=template,
-                where=where)
+            try:
+                raster_file = features_to_raster(
+                    table, fp, 'kk_bindung_planfall', template=template,
+                    where=where)
+            except arcpy.ExecuteError:
+                arcpy.AddMessage(
+                    u'Keine Ergebnisse der Kaufkraftbindung im '
+                    u'Planfall für den Markt "{}" -> scheinbar nicht erreichbar'
+                    .format(plan_market['name']))
+                continue
             self.output.add_layer(group_layer, 'Kaufkraftbindung_Raster',
                                   fn,
                                   name=layer_name,

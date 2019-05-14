@@ -4,7 +4,6 @@
 import arcpy
 import os
 from rpctools.utils.params import Tool
-from rpctools.utils import wingdbstub
 from rpctools.analyst.verkehr.otp_router import Point, OTPRouter
 import pandas as pd
 
