@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="rpctools",
-    version="0.9.9",
+    version="1.0",
 
     packages=find_packages('.', exclude=['ez_setup']),
     #namespace_packages=['rpctools'],

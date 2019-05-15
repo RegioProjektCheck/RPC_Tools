@@ -258,7 +258,7 @@ class NutzungenWohnen(Nutzungen):
             geb_types = group[geb_typ_col].values
             flaechen_template[geb_typ_col] = geb_types
             flaechen_template[id_flaeche_col] = flaechen_id
-            flaechen_template['Wohnungen'] = (
+            flaechen_template['Wohnungen'] = list(
                 group[we_col].values.astype(float) * group[ew_col] / duration)
             for j in range(begin, end + 1):
                 for i in range(1, duration + 1):
@@ -353,7 +353,7 @@ class NutzungenGewerbe(Nutzungen):
         results_workspace = 'FGDB_Bewohner_Arbeitsplaetze.gdb'
 
         tbx = self.parent_tbx
-        tbx.delete_rows_in_table(perc_res_table, workspace=results_workspace, 
+        tbx.delete_rows_in_table(perc_res_table, workspace=results_workspace,
                                  where='IDTeilflaeche={}'.format(flaechen_id))
 
         perc_table_df = tbx.table_to_dataframe(
