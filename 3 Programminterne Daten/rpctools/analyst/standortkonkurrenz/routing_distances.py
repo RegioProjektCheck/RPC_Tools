@@ -10,6 +10,7 @@ import requests
 import sys
 import time
 import numpy as np
+import math
 from scipy.ndimage import filters
 
 def filter_raster(array, threshold=120):
@@ -124,6 +125,7 @@ class DistanceRouting(object):
     def get_distances(self, origin, destinations, bbox=None):
         kmh = 12
         distances = np.ones(len(destinations), dtype=int)
+        beelines = np.ones(len(destinations), dtype=int)
         distances.fill(-1)
         dist_raster = self._request_dist_raster(origin, kmh=kmh)
         if dist_raster is None:
@@ -141,13 +143,18 @@ class DistanceRouting(object):
         print('filtering raster {}s'.format(time.time() - start))
         start = time.time()
         raster.register_points(destinations)
+        if destinations:
+            o = origin.transform(destinations[0].epsg)
         for i, dest in enumerate(destinations):
             value = raster.get_value(dest)
             distances[i] = (value / 60.) * kmh * 1000 if value < 120 else -1
+            # euclidian distance
+            beelines[i] = math.sqrt(math.pow(o[0] - dest.x, 2) +
+                                    math.pow(o[1] - dest.y, 2))
         print('mapping {}s'.format(time.time() - start))
 
         arcpy.Delete_management(dist_raster)
-        return distances
+        return distances, beelines
 
     def _request_dist_raster(self, origin, kmh=30):
         if origin.epsg != self.epsg:

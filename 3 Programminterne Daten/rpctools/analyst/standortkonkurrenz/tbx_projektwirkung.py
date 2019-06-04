@@ -190,9 +190,9 @@ class ProjektwirkungMarkets(Tool):
         df_zensus = self.parent_tbx.table_to_dataframe(
             'Siedlungszellen', columns=['id', 'kk', 'id_teilflaeche'])
 
-        # workaround for loading distances avoiding 'out of memory' errors
         df_distances = pd.DataFrame()
 
+        # workaround for loading distances avoiding 'out of memory' errors
         values = self.parent_tbx.query_table(
             'Beziehungen_Maerkte_Zellen', columns=['id_markt'])
         df_distances['id_markt'] = np.array(values).reshape(len(values)).astype('int16')
@@ -204,6 +204,10 @@ class ProjektwirkungMarkets(Tool):
         values = self.parent_tbx.query_table(
             'Beziehungen_Maerkte_Zellen', columns=['distanz'])
         df_distances['distanz'] = np.array(values).reshape(len(values)).astype('int32')
+        del(values)
+        values = self.parent_tbx.query_table(
+            'Beziehungen_Maerkte_Zellen', columns=['luftlinie'])
+        df_distances['luftlinie'] = np.array(values).reshape(len(values)).astype('int32')
         del(values)
 
         sales = Sales(df_distances, df_markets, df_zensus, debug=DEBUG,
@@ -376,10 +380,12 @@ class ProjektwirkungMarkets(Tool):
                 x, y = market['SHAPE']
                 origin = Point(x, y, id=market_id,
                                epsg=self.parent_tbx.config.epsg)
-                distances = routing.get_distances(origin, destinations, bbox)
+                distances, beelines = routing.get_distances(
+                    origin, destinations, bbox)
                 #distances = routing.get_distances(origin, destinations)
                 arcpy.AddMessage('   wird gespeichert')
-                self.distances_to_db(market_id, destinations, distances)
+                self.distances_to_db(market_id, destinations, distances,
+                                     beelines)
             else:
                 arcpy.AddMessage(u'   bereits berechnet, wird übersprungen')
             gc.collect()
@@ -547,7 +553,7 @@ class ProjektwirkungMarkets(Tool):
         self.parent_tbx.dataframe_to_table('Zentren', df_centers_res,
                                            pkeys=['id'])
 
-    def distances_to_db(self, market_id, destinations, distances):
+    def distances_to_db(self, market_id, destinations, distances, beelines):
         # no need to delete, should be dropped at this point anyway
         #self.parent_tbx.delete_rows_in_table(
             #'Beziehungen_Maerkte_Zellen', where='id_markt={}'.format(market_id))
@@ -560,6 +566,7 @@ class ProjektwirkungMarkets(Tool):
             shapes.append(arcpy.Point(dest.x, dest.y))
             in_auswahl.append(dest.in_auswahl)
         column_values['distanz'] = distances
+        column_values['luftlinie'] = beelines
         column_values['id_siedlungszelle'] = ids
         column_values['in_auswahl'] = in_auswahl
         column_values['SHAPE'] = shapes

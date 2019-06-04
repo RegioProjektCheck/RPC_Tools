@@ -48,6 +48,13 @@ class Sales(object):
         distances = self.distances.drop(
             self.distances.index[np.in1d(self.distances['id_markt'],
                                          ids_not_in_df)])
+
+        # easiest way to distinguish same distances by adding
+        # bee-lines as decimals
+        beelines = distances['luftlinie']
+        max_digits = int(np.log10(beelines.values.max()) + 1)
+        distances['distanz'] += (beelines / np.power(10 , max_digits))
+
         # calc with distances in kilometers
         distances['distanz'] /= 1000
         distances[distances < 0] = -1
@@ -87,11 +94,11 @@ class Sales(object):
         attraction_matrix[unreachable] = 0
         betriebstyp_col = 'id_betriebstyp_nullfall' \
             if setting == self.NULLFALL else 'id_betriebstyp_planfall'
-    
+
         masked_dist_matrix = dist_matrix.T
         masked_dist_matrix = masked_dist_matrix.mask(masked_dist_matrix < 0)
-        
-        # local providers 
+
+        # local providers
         # no real competition, but only closest three per cell (copy/paste from
         # calc_competitors, had no time seperate implementation)
         is_lp = df_markets[betriebstyp_col] == 1
@@ -104,22 +111,22 @@ class Sales(object):
         local_comp_matrix[df_ranking <= 3] = 1
         local_comp_matrix[np.isnan(df_ranking)] = 0
         local_comp_matrix = local_comp_matrix.T
-        
+
         # small markets
         is_sm = df_markets[betriebstyp_col] == 2
         small_markets = df_markets[is_sm]
         small_comp_matrix = self.calc_competitors(
             masked_dist_matrix, small_markets)
-        
+
         # big markets
         big_markets = df_markets[df_markets[betriebstyp_col] > 2]
         big_comp_matrix = self.calc_competitors(
             masked_dist_matrix, big_markets)
-        
+
         # merge
         big_comp_matrix.loc[is_lp] = local_comp_matrix
         big_comp_matrix.loc[is_sm] = small_comp_matrix.loc[is_sm]
-        
+
         competitor_matrix = big_comp_matrix
         competitor_matrix[dist_matrix < 0] = 0
 
@@ -219,7 +226,7 @@ class Sales(object):
                                            df_ranking['Umkreis']==3),
                             market_id] = factor
                 # write data for far markets with:
-                # -> market is far; 1 near market exists; 
+                # -> market is far; 1 near market exists;
                 # market is closer than posible other far markets
                 factor = df_markets.loc[market_id]\
                     ['zweiter_Markt_mit_Abstand_zum_ersten']
