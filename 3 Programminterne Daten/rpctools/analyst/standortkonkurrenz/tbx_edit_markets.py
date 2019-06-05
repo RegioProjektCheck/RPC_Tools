@@ -206,6 +206,17 @@ class TbxEditMarkets(Tbx):
         # market exists in planfall
         new_market['id_betriebstyp_planfall'] = default_typ
         new_market['vkfl_planfall'] = vkfl
+
+        bt = self.df_types[self.df_types['id_betriebstyp']
+                           == default_typ].name.values[0]
+        new_market['betriebstyp_planfall'] = bt
+        new_market['betriebstyp_nullfall'] = bt
+
+        kette = self.df_chains[self.df_chains['id_kette']
+                               == 0].name.values[0]
+        new_market['id_kette'] = 0
+        new_market['kette'] = kette
+
         self.insert_dataframe_in_table('Maerkte', new_market)
         ags = get_ags(self.folders.get_table('Maerkte'), 'id')
         new_ags = ags[new_id][0]
@@ -218,7 +229,7 @@ class TbxEditMarkets(Tbx):
         return the sales area (vkfl) matching the type of use (betriebstyp)
         of a single market
         """
-        # some discounters have (since there is no specific betriebstyp and 
+        # some discounters have (since there is no specific betriebstyp and
         # therefore no hint on possible vkfl for them)
         if id_betriebstyp == 7:
             default_vkfl = self.df_chains[
@@ -341,15 +352,20 @@ class TbxEditMarkets(Tbx):
             self.markets_df.loc[market_idx, 'name'] = self.par.name.value
 
         elif self.par.changed('chain'):
+            chain = self.par.chain.value
             id_chain = self.df_chains['id_kette'][
-                self.df_chains['name'] == self.par.chain.value].values[0]
+                self.df_chains['name'] == chain].values[0]
             self.markets_df.loc[market_idx, 'id_kette'] = id_chain
+            self.markets_df.loc[market_idx, 'kette'] = chain
 
         elif self.par.changed('type_name'):
             id_typ = self.df_types['id_betriebstyp'][
                 self.df_types['pretty'] == self.par.type_name.value].values[0]
+            typ = self.df_types[self.df_types['id_betriebstyp']
+                                == id_typ].name.values[0]
             # ToDo: set different type/vkfl for planfall if nullfall is edited?
             self.markets_df.loc[market_idx, 'id_betriebstyp_planfall'] = id_typ
+            self.markets_df.loc[market_idx, 'betriebstyp_planfall'] = typ
             id_kette = self.markets_df.loc[market_idx, 'id_kette'].values[0]
             vkfl = self.betriebstyp_to_vkfl(id_typ, id_kette)
             self.markets_df.loc[market_idx, 'vkfl_planfall'] = vkfl
@@ -357,6 +373,7 @@ class TbxEditMarkets(Tbx):
             # in case of planfall it stays 0
             if self.setting == NULLFALL:
                 self.markets_df.loc[market_idx, 'id_betriebstyp_nullfall'] = id_typ
+                self.markets_df.loc[market_idx, 'betriebstyp_nullfall'] = typ
                 self.markets_df.loc[market_idx, 'vkfl'] = vkfl
 
         elif self.par.changed('do_delete'):
