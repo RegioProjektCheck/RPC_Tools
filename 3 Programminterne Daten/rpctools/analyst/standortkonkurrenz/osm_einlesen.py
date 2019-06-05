@@ -15,11 +15,12 @@ import arcpy
 
 class Supermarket(Point):
     """A Supermarket"""
-    def __init__(self, id, x, y, name, kette, shop=None, typ=None, vkfl=None,
-                 id_betriebstyp=1, epsg=4326, id_teilflaeche=-1, id_kette=0,
-                 adresse='', **kwargs):
+    def __init__(self, id, x, y, name, kette, betriebstyp='', shop=None,
+                 typ=None, vkfl=None, id_betriebstyp=1, epsg=4326,
+                 id_teilflaeche=-1, id_kette=0, adresse='', **kwargs):
         super(Supermarket, self).__init__(x, y, id=id, epsg=epsg)
         self.id_betriebstyp = id_betriebstyp
+        self.betriebstyp = betriebstyp
         self.name = name
         self.id_kette = 0
         self.kette = kette

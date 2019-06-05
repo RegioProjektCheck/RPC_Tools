@@ -70,13 +70,16 @@ class MarktEinlesen(Tool):
             'id_betriebstyp_nullfall',
             'id_betriebstyp_planfall',
             'id_kette',
+            'betriebstyp_nullfall',
+            'betriebstyp_planfall',
+            'kette',
             'SHAPE@',
             'id_teilflaeche',
             'id',
             'adresse',
             'is_buffer',
             'is_osm',
-            'vkfl', 
+            'vkfl',
             'vkfl_planfall',
             'adresse'
         ]
@@ -96,9 +99,16 @@ class MarktEinlesen(Tool):
 
         with arcpy.da.InsertCursor(table, columns) as rows:
             for i, market in enumerate(supermarkets):
-                id_nullfall = 0 if planfall else market.id_betriebstyp
                 if market.name is None:
                     continue
+                id_planfall = market.id_betriebstyp
+                id_nullfall = 0 if planfall else id_planfall
+                bt_nullfall = self.df_bt[self.df_bt['id_betriebstyp']
+                                         == id_nullfall].name.values[0]
+                bt_planfall = self.df_bt[self.df_bt['id_betriebstyp']
+                                         == id_planfall].name.values[0]
+                kette = self.df_chains[self.df_chains['id_kette']
+                                       == market.id_kette].name.values[0]
                 market.create_geom()
                 # set sales area, if not set yet (esp. osm markets)
                 vkfl = market.vkfl or self.betriebstyp_to_vkfl(market)
@@ -108,8 +118,11 @@ class MarktEinlesen(Tool):
                     rows.insertRow((
                         market.name,
                         id_nullfall,
-                        market.id_betriebstyp,
+                        id_planfall,
                         market.id_kette,
+                        bt_nullfall,
+                        bt_planfall,
+                        kette,
                         market.geom,
                         market.id_teilflaeche,
                         start_id + i,
