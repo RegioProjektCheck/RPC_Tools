@@ -382,7 +382,6 @@ class ProjektwirkungMarkets(Tool):
                                epsg=self.parent_tbx.config.epsg)
                 distances, beelines = routing.get_distances(
                     origin, destinations, bbox)
-                #distances = routing.get_distances(origin, destinations)
                 arcpy.AddMessage('   wird gespeichert')
                 self.distances_to_db(market_id, destinations, distances,
                                      beelines)

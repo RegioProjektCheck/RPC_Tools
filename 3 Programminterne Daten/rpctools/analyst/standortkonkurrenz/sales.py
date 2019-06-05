@@ -23,7 +23,6 @@ class Sales(object):
 
     def __init__(self, df_distances, df_markets, df_zensus, debug=False,
                  projectname=''):
-
         self.distances = df_distances
         self.markets = df_markets
         self.zensus = df_zensus
@@ -50,10 +49,11 @@ class Sales(object):
                                          ids_not_in_df)])
 
         # easiest way to distinguish same distances by adding
-        # bee-lines as decimals
+        # normed bee-lines
         beelines = distances['luftlinie']
-        max_digits = int(np.log10(beelines.values.max()) + 1)
-        distances['distanz'] += (beelines / np.power(10 , max_digits))
+        beelines[distances['distanz'] == -1] = -1
+        beelines_norm = beelines / beelines.max()
+        distances['distanz'] += beelines_norm
 
         # calc with distances in kilometers
         distances['distanz'] /= 1000
