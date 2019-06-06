@@ -65,7 +65,7 @@ class ProjektwirkungMarkets(Tool):
             where = ('id_markt={} and distanz>=0 and in_auswahl=1'
                      .format(plan_market['id']))
             arcpy.Delete_management(fp)
-            template = self.folders.ZENSUS_RASTER_FILE
+            template = self.folders.ZENSUS_RASTER_500_FILE
             arcpy.Delete_management(fp)
             try:
                 raster_file = features_to_raster(

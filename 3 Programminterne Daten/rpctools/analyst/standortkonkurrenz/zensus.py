@@ -31,7 +31,7 @@ class Zensus(object):
 
     def __init__(self):
         self.folders = Folders()
-        self.epsg = 4326
+        self.epsg = 3035
         self.tmp_folder = arcpy.env.scratchGDB
         try:
             arcpy.Delete_management(self.tmp_folder)
@@ -45,7 +45,7 @@ class Zensus(object):
         selected communities
         """
         zensus_points = []
-        zensus_raster = self.folders.ZENSUS_RASTER_FILE
+        zensus_raster = self.folders.ZENSUS_RASTER_500_FILE
         # temporary paths
         out_raster = os.path.join(self.tmp_folder, 'zensus_cutout')
         raster_points = os.path.join(self.tmp_folder,
@@ -74,7 +74,7 @@ class Zensus(object):
         out_cs = arcpy.SpatialReference(epsg)
         arcpy.Project_management(raster_points, raster_points_projected,
                                  out_cs)
-        
+
         if cutout_shape:
             # clip raster points to selected communities
             arcpy.Clip_analysis(raster_points_projected,
@@ -150,7 +150,7 @@ class Zensus(object):
         for id_cell, ags in cursor:
             ags_indices[id_cell] = ags
         del(cursor)
-        
+
         results = dict([(a, [0, 0]) for a in ags_auswahl])
         for zensus_cell in zensus_points:
             kk_index = default_kk_index
