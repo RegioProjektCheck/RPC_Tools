@@ -106,6 +106,7 @@ class TbxEditMarkets(Tbx):
             workspace='FGDB_Standortkonkurrenz_Supermaerkte_Tool.gdb',
             is_base_table=True
         )
+        self.df_types = self.df_types[self.df_types['id_betriebstyp'] != 0]
 
         # list pretty names for Betriebstypen
         pretty_names = []
