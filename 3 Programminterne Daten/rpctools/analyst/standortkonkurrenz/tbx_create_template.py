@@ -23,7 +23,7 @@ class CreateTemplate(Tool):
         arcpy.AddMessage('Template wird geöffnet, bitte warten...')
         template.open()
 
-        if self.par.show_help:
+        if self.par.show_help.value:
             fn = MarketTemplate.template_types[typ][1]
             fp = os.path.join(self.folders.MANUALS_PATH, fn)
             os.startfile(fp)
