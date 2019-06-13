@@ -45,6 +45,9 @@ class Projektverwaltung(Tool):
         self.output.add_layer("projektdefinition", layer, fc,
                               name=u"Nutzungen des Plangebiets")
 
+        self.output.add_osm_layer()
+        self.output.add_project_contour()
+
         diagram = DiaTeilflaechen(project_name=self.par.name.value)
         self.output.add_diagram(diagram)
 

@@ -207,7 +207,7 @@ class Layer(object):
                  workspace='',
                  template_folder='',
                  disable_other=False,
-                 visible=True, 
+                 visible=True,
                  subgroup="",
                  in_project=True,
                  query="",
@@ -496,7 +496,7 @@ class Output(object):
                   template_folder='',
                   name='',
                   disable_other=False,
-                  visible=True, 
+                  visible=True,
                   subgroup="",
                   in_project=True,
                   query="",
@@ -593,9 +593,9 @@ class Output(object):
         '''show available layers'''
         if len(self.layers) == 0:
             return
-        # always add an osm layer and the contours of the areas background
-        self.add_osm_layer()
-        self.add_project_contour()
+        ## always add an osm layer and the contours of the areas background
+        # self.add_osm_layer()
+        # self.add_project_contour()
         for layer in self.layers:
             self._show_layer(layer, redraw=redraw)
 
