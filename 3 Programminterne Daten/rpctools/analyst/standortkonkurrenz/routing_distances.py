@@ -147,7 +147,8 @@ class DistanceRouting(object):
             o = origin.transform(destinations[0].epsg)
         for i, dest in enumerate(destinations):
             value = raster.get_value(dest)
-            distances[i] = (value / 60.) * kmh * 1000 if value < 120 else -1
+            distance = (value / 60.) * kmh * 1000 if value < 120 else -1
+            distances[i] = distance if distance <= 20000 else -1
             # euclidian distance
             beelines[i] = math.sqrt(math.pow(o[0] - dest.x, 2) +
                                     math.pow(o[1] - dest.y, 2))
