@@ -128,8 +128,12 @@ class Folders(object):
     def __init__(self, params=None, projectname=None, workspace=None):
         """class that returns path"""
         try:
-            self.BASE_PATH = _winreg.QueryValue( _winreg.HKEY_LOCAL_MACHINE,
-                                                 "Software\ProjektCheck PROFI")
+            self.BASE_PATH = _winreg.QueryValue(
+                _winreg.HKEY_LOCAL_MACHINE, "Software\ProjektCheck PROFI")
+            if not exists(self.BASE_PATH):
+                self.BASE_PATH = _winreg.QueryValue(
+                    _winreg.HKEY_LOCAL_MACHINE,
+                    "WOW6432Node\Software\ProjektCheck PROFI")
             if not exists(self.BASE_PATH):
                 raise WindowsError
         except WindowsError:
