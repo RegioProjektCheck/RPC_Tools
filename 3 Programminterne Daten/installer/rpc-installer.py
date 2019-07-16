@@ -172,7 +172,7 @@ def install_packages(python_path, install_dir=''):
     for package, filename in used_packages.iteritems():
         install_package(package, filename)
 
-    install_package('rpctools', 'rpctools-1.0.2-py2-none-any.whl',
+    install_package('rpctools', 'rpctools-1.0.3-py2-none-any.whl',
                     upgrade=True)
 
     log('Installation abgeschlossen.')

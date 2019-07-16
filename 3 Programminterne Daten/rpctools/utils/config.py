@@ -23,6 +23,9 @@ from rpctools.utils.singleton import Singleton
 from rpctools.utils.encoding import encode
 
 
+APPDATA_PATH = join(getenv('LOCALAPPDATA'), 'Projekt-Check')
+
+
 class Config(object):
     __metaclass__ = Singleton
 
@@ -63,7 +66,7 @@ class Config(object):
 
     @property
     def APPDATA_PATH(self):
-        path = join(getenv('LOCALAPPDATA'), 'Projekt-Check')
+        path = APPDATA_PATH
         if not exists(path):
             mkdir(path)
         return path
@@ -137,7 +140,14 @@ class Folders(object):
             if not exists(self.BASE_PATH):
                 raise WindowsError
         except WindowsError:
-            self.BASE_PATH = abspath(join(dirname(__file__), '..', '..', '..'))
+            path_f = join(APPDATA_PATH, 'inst_dir.txt')
+            if exists(path_f):
+                f = open(path_f, "r")
+                self.BASE_PATH = f.readline()
+                f.close()
+            else:
+                self.BASE_PATH = abspath(
+                    join(dirname(__file__), '..', '..', '..'))
 
         self._INTERN = '3 Programminterne Daten'
         self._BASE_DBS = 'workspaces'

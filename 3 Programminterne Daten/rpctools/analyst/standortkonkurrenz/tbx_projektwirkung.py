@@ -17,7 +17,7 @@ from rpctools.utils.spatial_lib import (get_project_centroid, Point,
 from rpctools.utils.config import Folders
 from rpctools.analyst.standortkonkurrenz.sales import Sales
 
-DEBUG = True
+DEBUG = False
 
 
 class ProjektwirkungMarkets(Tool):

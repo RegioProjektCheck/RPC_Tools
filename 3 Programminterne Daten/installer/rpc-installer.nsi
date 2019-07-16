@@ -63,6 +63,11 @@
 	;Store installation folder
 	WriteRegStr HKLM "Software\ProjektCheck Profi" "" $INSTDIR
 
+    CreateDirectory "$LOCALAPPDATA\Projekt-Check"
+    FileOpen $4 "$LOCALAPPDATA\Projekt-Check\inst_dir.txt" w
+    FileWrite $4 "$INSTDIR"
+    FileClose $4
+
     ;Create uninstaller
     WriteUninstaller "$INSTDIR\Uninstall.exe"
   SectionEnd
