@@ -271,8 +271,6 @@ class ProjektAnlegen(Projektverwaltung):
         arcpy.AddGeometryAttributes_management(
             Input_Features=tfl, Geometry_Properties="CENTROID_INSIDE")
 
-
-
         # Check if the distances between the centroids is smaller than max_dist
         toolbox = self.parent_tbx
         XY_INSIDE = toolbox.query_table("Teilflaechen_Plangebiet",

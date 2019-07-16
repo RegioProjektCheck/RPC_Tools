@@ -133,7 +133,7 @@ class Folders(object):
             if not exists(self.BASE_PATH):
                 self.BASE_PATH = _winreg.QueryValue(
                     _winreg.HKEY_LOCAL_MACHINE,
-                    "WOW6432Node\Software\ProjektCheck PROFI")
+                    "Software\WOW6432Node\ProjektCheck PROFI")
             if not exists(self.BASE_PATH):
                 raise WindowsError
         except WindowsError:
