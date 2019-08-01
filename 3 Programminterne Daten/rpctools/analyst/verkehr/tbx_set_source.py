@@ -19,7 +19,7 @@ class SetSource(Tool):
         # get extent
         toolbox = self.parent_tbx
         points = toolbox.table_to_dataframe('Anbindungspunkte',
-                                            columns=['Shape'],
+                                            columns=['SHAPE'],
                                             workspace='FGDB_Verkehr.gdb').as_matrix()
         self.set_layer_extent(points)
         # update the names of the areas the points belong to

@@ -2,11 +2,11 @@
     <Name>ProjektCheck</Name>
     <AddInID>{9b0f33ed-0bf7-41aa-8957-a7ad885b6d31}</AddInID>
     <Description>Projekt-Check</Description>
-    <Version>0.9.7</Version>
+    <Version>1.0.5</Version>
     <Image />
     <Author>Christoph Franke</Author>
     <Company>GGR</Company>
-    <Date>04/28/2017</Date>
+    <Date>08/01/2019</Date>
     <Targets>
         <Target name="Desktop" version="10.3" />
     </Targets>

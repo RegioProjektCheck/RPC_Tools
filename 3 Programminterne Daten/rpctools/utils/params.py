@@ -905,6 +905,10 @@ class Tbx(object):
                                 project=project, is_base_table=is_base_table)
 
         dataframe = pd.DataFrame.from_records(rows, columns=columns)
+        # there is some strange issue with naming the geometry column
+        # sometimes ArcGIS decides to name it Shape instead of SHAPE
+        if 'Shape' in dataframe.columns:
+            dataframe.rename(columns={"Shape": "SHAPE"}, inplace=True)
         return dataframe
 
 
@@ -1203,7 +1207,7 @@ class Tbx(object):
         try:
             self._commit_temporaries()
         except:
-            pass        
+            pass
         self.tool.main(self.par, parameters, messages)
         try:
             self.clear_temporary_dbs()

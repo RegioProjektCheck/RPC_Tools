@@ -212,7 +212,7 @@ class MarketTemplate(object):
                                      adresse=address, epsg=4326)
                 market.transform(self.epsg)
             else:
-                x, y = row['Shape']
+                x, y = row['SHAPE']
                 market = Supermarket(i, x, y, name, kette, vkfl=vkfl,
                                      epsg=self.epsg)
             markets.append(market)

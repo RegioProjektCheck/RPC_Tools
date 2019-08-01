@@ -454,7 +454,7 @@ class NutzungenEinzelhandel(Nutzungen):
                     area['Name'])
                 arcpy.AddMessage(u'  - {} mit {} m² Verkaufsfläche'.format(
                     name, vkfl_lebensmittel))
-                x, y = area['Shape']
+                x, y = area['SHAPE']
                 market = Supermarket(id,
                                      x, y,
                                      name=name,
