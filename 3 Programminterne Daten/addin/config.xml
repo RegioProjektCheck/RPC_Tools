@@ -268,9 +268,6 @@
                 <Button caption="Landschaftsschutz" category="ProjektCheck" class="Landschaftsschutz" id="rpc_tools.landschaftsschutzgebiete" image="Images\662000-sprouts.png" message="" tip="Blendet eine Rasterkarte (100x100m) der Gebiete mit einem allgemeinen Schutzstatus im Bereich Landschaftsschutz ein (Naturparke, Landschaftsschutzgebiete und Biosphärenreservate außerhalb der Gebiete mit strengem Schutzstatus). Quelle: IÖR-Monitor">
                     <Help heading="" />
                 </Button>
-                <Button caption="Detailangaben zu Schutzgebieten" category="ProjektCheck" class="Schutzgebiete" id="rpc_tools.detail_schutzgebiete" image="Images\001500-search.png" message="" tip="Öffnet eine Online-Karte des BfN zu den Schutzgebieten in Deutschland und zoomt auf den Bereich des Plangebiets. Dort finden sich Detailangaben zu den Schutzgebieten.">
-                    <Help heading="" />
-                </Button>
                 <Button caption="Unzerschnittene Freir&#228;ume > 100 qkm" category="ProjektCheck" class="Freiraeume_100qkm" id="rpc_tools.freiraeume_100" image="Images\UnzerschnittenerFreiraum100.png" message="" tip="Blendet eine Rasterkarte (100x100m) der unzerschnittenen Freiräume über 100 km² Größe ein. Quelle: IÖR-Monitor">
                     <Help heading="" />
                 </Button>
@@ -572,7 +569,6 @@
                     <Items>
                         <Button refID="rpc_tools.naturschutzgebiete" />
                         <Button refID="rpc_tools.landschaftsschutzgebiete" />
-                        <Button refID="rpc_tools.detail_schutzgebiete" />
                     </Items>
                 </Menu>
                 <Menu caption="Unzerschnittene R&#228;ume" category="ProjektCheck" id="rpc_tools.menu_uzvr" isRootMenu="false" isShortcutMenu="true" separator="true">

@@ -65,6 +65,7 @@ class Schutzgebiete(ToolboxButton):
         if self._message:
             pythonaddins.MessageBox(self._message, 'Hinweis', 0)
 
+
 class Freiraeume_100qkm(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
