@@ -52,29 +52,15 @@ class Ueberschneidungen(Tool):
         if self.parent_tbx.layer_number != 9:
             self.output.add_layer(
                 groupname = "oekologie", template_layer = path,
-                template_folder="oekologie", zoom=False, disable_other = True,
-                show_wms_legends=True
+                template_folder="oekologie", zoom=False,
+                disable_other = True, show_wms_legends=False
             )
             arcpy.RefreshTOC()
             arcpy.RefreshActiveView()
 
 
     def run(self):
-        params = self.par
-        projekt = self.projectname
-        #self.output.enable_layer('projektdefinition')
-        if self.parent_tbx.layer_number == 9:
-            x = 3555857.414
-            y = 5911101.900
-            arcpy.AddMessage("hu: " + str(projekt))
-            database = self.folders.get_db("FGDB_Definition_Projekt.gdb", projekt)
-            table = 'Teilflaechen_Plangebiet'
-            columns = np.array(['Nutzungsart', 'Flaeche_ha', 'INSIDE_X', 'INSIDE_Y'])
-            Results = wmean.Read_FGDB(database, table, columns)
-            Results.get_result_block()
-            print(wmean.calc_weighted_mean(Results.result_block, Nutzungsart=0))
-            url = "http://www.geodienste.bfn.de/schutzgebiete/#?centerX={}?centerY={}?scale=50000?layers=639".format(x, y)
-            webbrowser.open(url, new=1, autoraise=True)
+        pass
 
 
 

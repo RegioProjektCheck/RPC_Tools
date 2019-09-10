@@ -614,7 +614,6 @@ class Output(object):
                 #p = str(p)
             #params.append(p)
         params = [str(getattr(image, a)) for a in attrs]
-        print params
         subprocess.Popen(
             [os.path.join(sys.exec_prefix, 'python.exe'),
              '-m' , image_exec.__name__] + params, shell=True)

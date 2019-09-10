@@ -33,26 +33,28 @@ __all__ = [
 ]
 
 
-
 class Erlaeuterung(FileButton):
     _file = 'ProjektCheck_Erlaeuterung_Kennwerte_Leistungsfaehigkeit_Boden.pdf'
 
+
 class Naturschutz(ToolboxButton):
-    """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
+    """Implementation for rpc_tools.naturschutzgebiete (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = False
     _toolbox_name = 'TbxLayerNatur'
 
+
 class Landschaftsschutz(ToolboxButton):
-    """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
+    """Implementation for rpc_tools.landschaftsschutzgebiete (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = False
     _toolbox_name = 'TbxLayerLandschaft'
 
+
 class Schutzgebiete(ToolboxButton):
-    """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
+    """Implementation for rpc_tools.detail_schutzgebiete (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = False
@@ -70,12 +72,14 @@ class Freiraeume_100qkm(ToolboxButton):
     _do_show = False
     _toolbox_name = 'TbxLayerFreiraum_100'
 
+
 class Freiraeume_50qkm(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = False
     _toolbox_name = 'TbxLayerFreiraum_50'
+
 
 class Freiraeume(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
@@ -84,6 +88,7 @@ class Freiraeume(ToolboxButton):
     _do_show = False
     _toolbox_name = 'TbxLayerFreiraum'
 
+
 class Waldgebiete(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
@@ -91,12 +96,14 @@ class Waldgebiete(ToolboxButton):
     _do_show = False
     _toolbox_name = 'TbxLayerWald'
 
+
 class Waelder_50qkm(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = False
     _toolbox_name = 'TbxLayerWald_50'
+
 
 class Hochspannungsleitungen(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
@@ -106,7 +113,6 @@ class Hochspannungsleitungen(ToolboxButton):
     _toolbox_name = 'TbxLayerHochspannung'
 
 
-
 class Wohndichte(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
@@ -114,13 +120,13 @@ class Wohndichte(ToolboxButton):
     _do_show = True
     _toolbox_name = 'TbxWohndichte'
 
+
 class Wohnflaechendichte(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _do_show = True
     _toolbox_name = 'TbxWohnflaechendichte'
-
 
 
 class Integrationsgrad_berechnen(ToolboxButton):
@@ -179,13 +185,6 @@ class Grenze_loeschen(ToolboxButton):
     _toolbox_name = 'TbxIntegrationsgrad_loeschen'
 
 
-
-
-
-
-
-
-
 class BodenAnzeigen_Nullfall(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
@@ -208,6 +207,7 @@ class BodenEntfernen_Nullfall(ToolboxButton):
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _toolbox_name = 'TbxBodenEntfernen_Nullfall'
 
+
 class BodenEntfernen_Planfall(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
@@ -215,12 +215,14 @@ class BodenEntfernen_Planfall(ToolboxButton):
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _toolbox_name = 'TbxBodenEntfernen_Planfall'
 
+
 class Zeichnung_Nullfall(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
     _path = folders.ANALYST_PYT_PATH
     _do_show = True
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _toolbox_name = 'TbxZeichnung_Nullfall'
+
 
 class Zeichnung_Planfall(ToolboxButton):
     """Implementation for rpc_tools.bewohner_schaetzen (Button)"""
@@ -242,10 +244,6 @@ class Kennwerte_berechnen(ToolboxButton):
     _path = folders.ANALYST_PYT_PATH
     _pyt_file = u'Flaeche und Oekologie.pyt'
     _toolbox_name = 'TbxBodenBewertung'
-
-
-
-
 
 
 class Draw_Bodenbedeckung(ToolboxButton):

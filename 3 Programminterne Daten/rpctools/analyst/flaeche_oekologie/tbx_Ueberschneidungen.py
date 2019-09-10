@@ -44,6 +44,7 @@ class TbxLayerWald(TbxUeberschneidungen):
         self.layer_number = 1
         return par
 
+
 class TbxLayerNatur(TbxUeberschneidungen):
 
     def _getParameterInfo(self):
@@ -51,6 +52,7 @@ class TbxLayerNatur(TbxUeberschneidungen):
         par = self.par
         self.layer_number = 2
         return par
+
 
 class TbxLayerLandschaft(TbxUeberschneidungen):
 
@@ -60,6 +62,7 @@ class TbxLayerLandschaft(TbxUeberschneidungen):
         self.layer_number = 3
         return par
 
+
 class TbxLayerFreiraum_100(TbxUeberschneidungen):
 
     def _getParameterInfo(self):
@@ -68,6 +71,7 @@ class TbxLayerFreiraum_100(TbxUeberschneidungen):
         self.layer_number = 4
         return par
 
+
 class TbxLayerFreiraum_50(TbxUeberschneidungen):
 
     def _getParameterInfo(self):
@@ -75,6 +79,7 @@ class TbxLayerFreiraum_50(TbxUeberschneidungen):
         par = self.par
         self.layer_number = 5
         return par
+
 
 class TbxLayerFreiraum(TbxUeberschneidungen):
 
@@ -101,6 +106,7 @@ class TbxLayerHochspannung(TbxUeberschneidungen):
         par = self.par
         self.layer_number = 8
         return par
+
 
 class TbxSchutzgebiete(TbxUeberschneidungen):
 
