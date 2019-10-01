@@ -28,7 +28,7 @@
 
                 <!-- PROJEKTVERWALTUNG -->
 
-                <ComboBox caption="Projekt" category="ProjektCheck" class="ProjektAuswahl" id="rpc_tools.projekt_auswahl" itemSizeString="WWWWWW" message="" rows="4" sizeString="WWWWWW" tip="Nur dieses Projekt k&#246;nnen Sie editieren und analysieren. Weitere Projekte k&#246;nnen angezeigt bleiben.">
+                <ComboBox caption="Projekt" category="ProjektCheck" class="ProjektAuswahl" id="rpc_tools.projekt_auswahl" tip="Nur dieses Projekt k&#246;nnen Sie editieren und analysieren. Weitere Projekte k&#246;nnen angezeigt bleiben.">
                     <Help heading="" />
                 </ComboBox>
                 <Button caption="Speicherort f&#252;r Ihre Projekte" category="ProjektCheck" class="ProjektOrdner" id="rpc_tools.projektordner" image="Images\ReportSave_B_32.png" message="" tip="Vor der ersten Nutzung von Projekt-Check einmalig den Speicherort für Ihre Projekte festlegen.">
@@ -248,6 +248,9 @@
                     <Help heading="" />
                 </Tool>
                 <Button caption="Projektwirkung sch&#228;tzen" category="ProjektCheck" class="StandortkonkurrenzProjektwirkung" id="rpc_tools.standortkonkurrenz_projektwirkung" image="Images\GenericCalculator16.png" message="" tip="Umsatzumverteilung zwischen Planfall und Nullfall bezogen auf die Gemeinden und die Zentren sowie weitere Kennwerte der Einzelhandelsplanung schätzen">
+                    <Help heading="" />
+                </Button>
+                <Button caption="Ergebnisse anzeigen" category="ProjektCheck" class="StandortkonkurrenzErgebnisse" id="rpc_tools.standortkonkurrenz_ergebnisse" image="Images\eye-2-16.png" message="" tip="Ergebnisse der letzten Berechnung der Projektwirkung anzeigen">
                     <Help heading="" />
                 </Button>
                 <Tool caption="Betrachtungsraum ausw&#228;hlen" category="ProjektCheck" class="FieldSelection" id="rpc_tools.select_ags" image="Images\CadastralFeatureSelect16.png" message="" tip="">
@@ -727,6 +730,7 @@
                         <Menu refID="rpc_tools.menu_standortkonkurrenz_planfall" />
                         <Menu refID="rpc_tools.menu_zentren" />
                         <Button refID="rpc_tools.standortkonkurrenz_projektwirkung" separator="true"/>
+                        <Button refID="rpc_tools.standortkonkurrenz_ergebnisse"/>
                     </Items>
                 </Menu>
                 <Menu caption="Analysieren" category="ProjektCheck" id="rpc_tools.menu_analysieren" isRootMenu="false" isShortcutMenu="true" separator="true">

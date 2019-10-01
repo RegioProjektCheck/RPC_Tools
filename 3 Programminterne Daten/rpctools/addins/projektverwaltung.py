@@ -32,8 +32,8 @@ class ProjektAuswahl(ProjektAnzeigen):
         super(ProjektAuswahl, self).__init__()
         self.editable = True
         self.enabled = True
-        self.dropdownWidth = 'WWWWWW'
-        self.width = 'WWWWWW'
+        self.dropdownWidth = 'WWWWWWWWWWWWWWWWWWWWWWW'
+        self.width = 'WWWWWWWWWWWWWWWW'
         # connect the change of the active project to a refresh of the project-
         # list (esp. to auto. select the active project)
         config.on_change('active_project', lambda active: self.refresh())

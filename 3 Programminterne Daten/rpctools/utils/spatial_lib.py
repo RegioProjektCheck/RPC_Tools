@@ -51,21 +51,22 @@ def features_to_raster(feature_class, outfile, field, template=None,
         full path to template raster, outfput file will get same projection and
         raster size
     '''
-    proj_tmp = join(arcpy.env.scratchGDB, 'proj_tmp')
-    where_tmp = join(arcpy.env.scratchGDB, 'where_tmp')
-    arcpy.Delete_management(where_tmp)
-    arcpy.Delete_management(proj_tmp)
-    in_features = arcpy.FeatureClassToFeatureClass_conversion(
-        feature_class, *split(where_tmp), where_clause=where)
-    if template:
-        desc = arcpy.Describe(template)
-        sr = desc.spatialReference
-        in_features = arcpy.Project_management(
-            in_features, proj_tmp, sr, transform_method=transform_method)
-    arcpy.FeatureToRaster_conversion(in_features, field, outfile,
-                                     cell_size=template)
-    arcpy.Delete_management(where_tmp)
-    arcpy.Delete_management(proj_tmp)
+    with ArcpyEnv(addOutputsToMap=False):
+        proj_tmp = join(arcpy.env.scratchGDB, 'proj_tmp')
+        where_tmp = join(arcpy.env.scratchGDB, 'where_tmp')
+        arcpy.Delete_management(where_tmp)
+        arcpy.Delete_management(proj_tmp)
+        in_features = arcpy.FeatureClassToFeatureClass_conversion(
+            feature_class, *split(where_tmp), where_clause=where)
+        if template:
+            desc = arcpy.Describe(template)
+            sr = desc.spatialReference
+            in_features = arcpy.Project_management(
+                in_features, proj_tmp, sr, transform_method=transform_method)
+        arcpy.FeatureToRaster_conversion(in_features, field, outfile,
+                                         cell_size=template)
+        arcpy.Delete_management(where_tmp)
+        arcpy.Delete_management(proj_tmp)
     return outfile
 
 def get_project_epsg():
