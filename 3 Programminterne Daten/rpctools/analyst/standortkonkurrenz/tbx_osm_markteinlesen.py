@@ -37,7 +37,8 @@ class MarktEinlesen(Tool):
             'Ketten_Zuordnung',
             workspace='FGDB_Standortkonkurrenz_Supermaerkte_Tool.gdb',
             is_base_table=True)
-        self.df_chains_alloc.sort_values(by='prioritaet', ascending=False)
+        self.df_chains_alloc = self.df_chains_alloc.sort_values(
+            by='prioritaet', ascending=False)
 
     def run(self):
         """"""
@@ -201,10 +202,11 @@ class MarktEinlesen(Tool):
         for market in markets:
             # no name -> nothing to parse
             name = getattr(market, field)
-            try:
-                name = str(name)
-            except:
-                pass
+            if name is not None:
+                try:
+                    name = str(name)
+                except:
+                    pass
             if not name:
                 arcpy.AddMessage(u'  - Markt mit fehlendem Attribut "{}" wird '
                                  u'übersprungen'.format(field))

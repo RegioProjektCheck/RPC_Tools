@@ -22,13 +22,8 @@ class MaerkteImportieren(MarktEinlesen):
         if hasattr(template, 'value'):
             template = template.value
 
-        # filepath as input
-        if isinstance(template, str):
-            path, filename = os.path.split(filepath)
-        # layer as input
-        else:
-            desc = arcpy.Describe(template)
-            path, filename = desc.path, desc.file
+        desc = arcpy.Describe(template)
+        path, filename = desc.path, desc.file
 
         name, ext = os.path.splitext(filename)
 
@@ -152,7 +147,7 @@ if __name__ == '__main__':
     t._getParameterInfo()
     t.set_active_project()
     t.par.truncate.value = True
-    t.par.template.value = r'C:\ggr Projekte\RPC_Tools\3 Benutzerdefinierte Projekte\Test Standort neu\input_templates\maerkte_vorlage.csv'
+    t.par.template.value = r'C:\Users\ggr\Desktop\RPC Projekte\04_Tostedt_Sascha\input_templates\maerkte_vorlage.csv'
     #t.par.template.value = r'C:\Users\ggr\Desktop\templates\maerkte_template_auszug.xlsx'
     #t = TbxMaerkteImportierenFeatureClass()
     #t._getParameterInfo()
