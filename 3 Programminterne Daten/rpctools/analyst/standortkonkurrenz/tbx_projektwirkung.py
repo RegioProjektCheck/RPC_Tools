@@ -124,7 +124,7 @@ class ProjektwirkungMarkets(Tool):
             where='"Auswahl" <> 0 and nutzerdefiniert = 0')
         cur_ags = zip(*cur_ags)[0]
         cur_settings = {
-            'sz_puffer': self.par.radius_sz.value,
+            #'sz_puffer': self.par.radius_sz.value,
             'betrachtungsraum': ','.join(cur_ags),
         }
         prev_settings = self.parent_tbx.query_table(set_table,
@@ -227,7 +227,9 @@ class ProjektwirkungMarkets(Tool):
         and write them to the database'''
         buffered = self.folders.get_table('Siedlungszellen_Puffer', check=False)
         arcpy.Delete_management(buffered)
-        bbox = self.buffer_area(self.par.radius_sz.value, buffered)
+        bbox = self.buffer_area(
+            0, # self.par.radius_sz.value,
+            buffered)
 
         zensus = Zensus()
         arcpy.AddMessage('Extrahiere Siedlungszellen aus Zensusdaten...')
@@ -613,16 +615,16 @@ class TbxProjektwirkungMarkets(Tbx):
         p.enabled = False
 
         # markets radius
-        p = self.add_parameter('radius_sz')
-        p.name = u'radius_sz'
-        p.displayName = encode(u'Pufferzone für Siedlungszellen um gewählte '
-                               u'Gemeinden festlegen (in m)')
-        p.parameterType = 'Required'
-        p.direction = 'Input'
-        p.datatype = u'GPLong'
-        p.filter.type = 'Range'
-        p.filter.list = [0, 5000]
-        p.value = 2000
+        #p = self.add_parameter('radius_sz')
+        #p.name = u'radius_sz'
+        #p.displayName = encode(u'Pufferzone für Siedlungszellen um gewählte '
+                               #u'Gemeinden festlegen (in m)')
+        #p.parameterType = 'Required'
+        #p.direction = 'Input'
+        #p.datatype = u'GPLong'
+        #p.filter.type = 'Range'
+        #p.filter.list = [0, 5000]
+        #p.value = 0
 
         param = self.add_parameter('recalculate')
         param.name = encode(u'Neuberechnung')
@@ -638,8 +640,8 @@ class TbxProjektwirkungMarkets(Tbx):
         set_table = 'Settings'
         prev_settings = self.query_table(set_table,
                                          columns='sz_puffer')
-        self.par.radius_sz.value = (2000 if len(prev_settings) == 0
-                                    else prev_settings[0][0])
+        #self.par.radius_sz.value = (2000 if len(prev_settings) == 0
+                                    #else prev_settings[0][0])
 
     def validate_inputs(self):
         df_markets = self.table_to_dataframe('Maerkte')
@@ -672,7 +674,7 @@ if __name__ == "__main__":
     t.getParameterInfo()
     t.set_active_project()
     t.par.recalculate.value = False
-    t.par.radius_sz.value = 0
+    #t.par.radius_sz.value = 0
     t.validate_inputs()
     #t.show_outputs()
     t.execute()

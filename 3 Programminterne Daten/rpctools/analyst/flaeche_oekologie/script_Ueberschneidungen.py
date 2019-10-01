@@ -49,15 +49,13 @@ class Ueberschneidungen(Tool):
             legend = "Legende_Hochspannungsleitungen"
             title = u"Legende: Hochspannungsleitungen"
 
-        if self.parent_tbx.layer_number != 9:
-            self.output.add_layer(
-                groupname = "oekologie", template_layer = path,
-                template_folder="oekologie", zoom=False,
-                disable_other = True, show_wms_legends=False
-            )
-            arcpy.RefreshTOC()
-            arcpy.RefreshActiveView()
-
+        self.output.add_layer(
+            groupname = "oekologie", template_layer = path,
+            template_folder="oekologie", zoom=False,
+            disable_other = True, show_wms_legends=False
+        )
+        arcpy.RefreshTOC()
+        arcpy.RefreshActiveView()
 
     def run(self):
         pass
