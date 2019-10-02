@@ -17,7 +17,7 @@ from rpctools.utils.spatial_lib import (get_project_centroid, Point,
 from rpctools.utils.config import Folders
 from rpctools.analyst.standortkonkurrenz.sales import Sales
 
-DEBUG = True
+DEBUG = False
 
 
 class ProjektwirkungMarkets(Tool):
@@ -52,7 +52,7 @@ class ProjektwirkungMarkets(Tool):
         id_nullfall = df_markets['id_betriebstyp_nullfall']
         id_planfall = df_markets['id_betriebstyp_planfall']
         planfall_idx = np.logical_and((id_nullfall != id_planfall), (id_planfall > 0))
-    
+
         for index, plan_market in df_markets[planfall_idx].iterrows():
             layer_name = u'Kaufkraftbindung {m} ({i})'.format(
                 m=plan_market['name'], i=plan_market['id'])
