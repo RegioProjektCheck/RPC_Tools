@@ -313,7 +313,9 @@ class Links(object):
     def add_vertex(self, node1, node2):
         """"""
         node_ids = (node1.node_id, node2.node_id)
-        link = self.node_ids2link.get(node_ids)
+        node_ids_reversed = (node2.node_id, node1.node_id)
+        link = self.node_ids2link.get(node_ids,
+                                      self.node_ids2link.get(node_ids_reversed))
         if link is None:
             link = Link(node1, node2, self.serial)
             self.node_ids2link[node_ids] = link
