@@ -2,11 +2,11 @@
     <Name>ProjektCheck</Name>
     <AddInID>{9b0f33ed-0bf7-41aa-8957-a7ad885b6d31}</AddInID>
     <Description>Projekt-Check</Description>
-    <Version>1.0.5</Version>
+    <Version>1.1.1</Version>
     <Image />
     <Author>Christoph Franke</Author>
     <Company>GGR</Company>
-    <Date>08/01/2019</Date>
+    <Date>10/23/2019</Date>
     <Targets>
         <Target name="Desktop" version="10.3" />
     </Targets>
@@ -265,10 +265,10 @@
                 <Button caption="Kurzanleitung" category="ProjektCheck" class="HilfeOekologie" id="rpc_tools.hilfe_oekologie" image="Images\HelpSystem_C_16.png" message="" tip="Zeigt eine Kurzanleitung (pdf) zu den Funktionen im Analysebereich “Ökologie” an.">
                     <Help heading="" />
                 </Button>
-                <Button caption="Natur- und Artenschutz" category="ProjektCheck" class="Naturschutz" id="rpc_tools.naturschutzgebiete" image="Images\700200-butterfly.png" message="" tip="Blendet eine Rasterkarte (100x100m) der Gebiete mit einem strengen Schutzstatus im Bereich Natur- und Artenschutz ein (Nationalparke, Naturschutzgebiete, Fauna-Flora-Habitat-Gebiete und Vogelschutzgebiete). Quelle: IÖR-Monitor">
+                <Button caption="Natur- und Artenschutz" category="ProjektCheck" class="Naturschutz" id="rpc_tools.naturschutzgebiete" image="Images\700200-butterfly.png" message="" tip="Blendet Layer mit Umrissen von Naturschutzgebieten, FFH-Gebieten, Nationalparks, Naturmonumenten, Vogelschutzgebieten und RAMSAR-Gebieten ein. Quelle: BfN">
                     <Help heading="" />
                 </Button>
-                <Button caption="Landschaftsschutz" category="ProjektCheck" class="Landschaftsschutz" id="rpc_tools.landschaftsschutzgebiete" image="Images\662000-sprouts.png" message="" tip="Blendet eine Rasterkarte (100x100m) der Gebiete mit einem allgemeinen Schutzstatus im Bereich Landschaftsschutz ein (Naturparke, Landschaftsschutzgebiete und Biosphärenreservate außerhalb der Gebiete mit strengem Schutzstatus). Quelle: IÖR-Monitor">
+                <Button caption="Landschaftsschutz" category="ProjektCheck" class="Landschaftsschutz" id="rpc_tools.landschaftsschutzgebiete" image="Images\662000-sprouts.png" message="" tip="Blendet Layer mit Umrissen von Landschaftsschutzgebieten, Naturparken und Biosphärenreservaten ein. Quelle: BfN">
                     <Help heading="" />
                 </Button>
                 <Button caption="Unzerschnittene Freir&#228;ume > 100 qkm" category="ProjektCheck" class="Freiraeume_100qkm" id="rpc_tools.freiraeume_100" image="Images\UnzerschnittenerFreiraum100.png" message="" tip="Blendet eine Rasterkarte (100x100m) der unzerschnittenen Freiräume über 100 km² Größe ein. Quelle: IÖR-Monitor">
