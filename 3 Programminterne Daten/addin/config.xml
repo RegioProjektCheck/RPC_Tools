@@ -2,11 +2,11 @@
     <Name>ProjektCheck</Name>
     <AddInID>{9b0f33ed-0bf7-41aa-8957-a7ad885b6d31}</AddInID>
     <Description>Projekt-Check</Description>
-    <Version>1.1.1</Version>
+    <Version>1.2</Version>
     <Image />
     <Author>Christoph Franke</Author>
     <Company>GGR</Company>
-    <Date>10/23/2019</Date>
+    <Date>10/28/2019</Date>
     <Targets>
         <Target name="Desktop" version="10.3" />
     </Targets>
@@ -295,7 +295,7 @@
                 <Button caption="Wohnfl&#228;chendichte bestimmen" category="ProjektCheck" class="Wohnflaechendichte" id="rpc_tools.wohnflaechendichte" image="Images\0188-door.png" message="" tip="Die Wohnflächendichte (qm Wohnfläche pro Hektar Nettowohnbauland) für Teilflächen mit der Nutzung “Wohnen” ermitteln und mit regionalen Durchschnittswerten vergleichen.">
                     <Help heading="" />
                 </Button>
-                <Button caption="Hochspannungsleitungen" category="ProjektCheck" class="Hochspannungsleitungen" id="rpc_tools.hochspannung" image="Images\Freileitung.png" message="" tip="Blendet eine Rasterkarte (100x100m) mit den Einflussbereichen von Hochspannungsfreileitungen ein. Quelle: IÖR-Monitor">
+                <Button caption="Hochspannungsleitungen" category="ProjektCheck" class="Hochspannungsleitungen" id="rpc_tools.hochspannung" image="Images\Freileitung.png" message="" tip="Blendet einen Layer mit den Hochspannungsfreileitungen ein. Quelle: GeoBasis-DE / BKG (2019) Datenlizenz 'Deutschland – Namensnennung – Version 2.0' Lizenztext unter www.govdata.de/dl-de/by-2-0">
                     <Help heading="" />
                 </Button>
                 <Tool caption="Gemeinsame Grenze mit Siedlungsk&#246;rper einzeichnen" category="ProjektCheck" class="Grenze_zeichnen" id="rpc_tools.grenzlinie_einzeichnen" image="Images\EditingSketchTool12.png" message="" tip="Markieren der Abschnitte der Außenkante des Plangebiets, die an eine bestehende Siedlungsfläche angrenzen.">
