@@ -23,7 +23,7 @@ import subprocess
 from collections import OrderedDict
 import _winreg
 
-min_requirement = 10.3
+min_requirement = 10.2
 
 def get_python_path():
     try:

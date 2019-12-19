@@ -14,6 +14,8 @@ from rpctools.analyst.infrastrukturkosten.tbx_kosten_vergleichen \
      import TbxKostenVergleichen
 from rpctools.analyst.infrastrukturkosten.tbx_netzkostenaufteilung \
      import TbxNetzKostenaufteilungInnere
+from rpctools.analyst.infrastrukturkosten.tbx_infrastrukturmengen_kontrollieren \
+	 import TbxInfrastrukturmengenKontrollieren
 
 class Toolbox(object):
     def __init__(self):
@@ -21,6 +23,7 @@ class Toolbox(object):
         self.alias = ''
         self.tools = [TbxKostenkennwerteKontrollieren,
                       TbxMassnahmenEditieren,
+					  TbxInfrastrukturmengenKontrollieren,
                       TbxInfrastrukturmengenBilanz,
                       TbxGesamtkosten,
                       TbxKostenVergleichen,

@@ -111,12 +111,22 @@ class TbxNutzungenWohnen(TbxNutzungen):
         params = super(TbxNutzungenWohnen, self)._getParameterInfo()
 
         # specific parameters for "Wohnen"
-
         heading = encode(u"2) Anzahl Wohneinheiten nach Gebäudetypen")
 
+        # Wohntyp auswaehlen
+        param = self.add_parameter('wohntyp')
+        param.name = u'Wohntyp'
+        param.displayName = encode(u'Anzahl an Wohneinheiten über Gebietstyp schaetzen')
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'GPString'
+        param.filter.list = ["Einfamilienhäuser auf großen Grundstücken", "Einfamilienhausgebiet mit wenigen Doppelhäusern" , "Einzel-, Doppel- und Reihenhäuser", "Doppel-, Reihen- und Mehrfamilienhäuser", "Reihenhäuser und Stadtvillen", "Geschosswohnungsbau", "Benutzerdefiniert"]
+        param.value = param.filter.list[6]
+        param.category = heading
+
+        # Anzahl WE in Gebäudetypen
         for gt in self.gebaeudetypen.itervalues():
             assert isinstance(gt, Gebaeudetyp)
-            # Anzahl WE in Gebäudetypen
             param = self.add_parameter(gt.param_we)
             param.name = encode(u'Bewohner {}'.format(gt.display_name))
             param.displayName = encode(u'Anzahl WE in {}'.format(gt.display_name))
@@ -125,7 +135,7 @@ class TbxNutzungenWohnen(TbxNutzungen):
             param.datatype = u'Long'
             param.value = u'0'
             param.filter.type = 'Range'
-            param.filter.list = [0, 500]
+            param.filter.list = [0, 1000]
             param.category = heading
 
         heading = ("3) Mittlere Anzahl Einwohner pro Wohneinheit " +
@@ -198,6 +208,25 @@ class TbxNutzungenWohnen(TbxNutzungen):
             return params
 
         we_changed = False
+
+        if params.changed('wohntyp'):
+            if params.wohntyp.value != "Benutzerdefiniert":
+                tbl_teilflaechen = self.folders.get_table("Teilflaechen_Plangebiet", 'FGDB_Definition_Projekt.gdb')
+                tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
+                area, i = self.get_selected_area()
+                tfl_hektar = area['Flaeche_ha']
+                tbl_we_typ = self.table_to_dataframe('WE_nach_Gebietstyp')
+                tbl_we_typ = tbl_we_typ.loc[tbl_we_typ['Gebietstyp'] == params.wohntyp.value]
+                anzahl_efh = int(tbl_we_typ.iloc[0].loc["WE_pro_Hektar"] * tfl_hektar)
+                anzahl_dh = int(tbl_we_typ.iloc[1].loc["WE_pro_Hektar"] * tfl_hektar)
+                anzahl_rh = int(tbl_we_typ.iloc[2].loc["WE_pro_Hektar"] * tfl_hektar)
+                anzahl_mfh = int(tbl_we_typ.iloc[3].loc["WE_pro_Hektar"] * tfl_hektar)
+                self.par[5].value = anzahl_efh
+                self.par[6].value = anzahl_dh
+                self.par[7].value = anzahl_rh
+                self.par[8].value = anzahl_mfh
+                we_changed = True
+
         for gt in self.gebaeudetypen.itervalues():
             if params.changed(gt.param_we):
                 self._update_row(area, gt.typ_id, 'WE',
@@ -208,10 +237,13 @@ class TbxNutzungenWohnen(TbxNutzungen):
                                  self.par[gt.param_ew_je_we].value)
 
         if we_changed:
+            if not params.changed('wohntyp'):
+                params.wohntyp.value = "Benutzerdefiniert"
             we_idx = self.df_acc_units['IDTeilflaeche'] == area['id_teilflaeche']
             sums = self.df_acc_units[we_idx]['WE'].sum()
             self.df_areas.loc[area_idx, 'WE_gesamt'] = sums
             self.update_pretty_name()
+
         return params
 
 
