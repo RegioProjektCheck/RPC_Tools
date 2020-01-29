@@ -416,7 +416,7 @@
                 <Button caption="Haltestellen anzeigen" category="ProjektCheck" class="HaltestellenAnzeigen" id="rpc_tools.haltestellen_anzeigen" image="Images\eye-2-16.png" message="" tip="Sofern die Funktion “Haltestellen ermitteln” schon ausgeführt wurde, lassen sich die Haltestellen hiermit schnell wieder einblenden.">
                     <Help heading="" />
                 </Button>
-                <Button caption="OEPNV-Karte aufrufen" category="ProjektCheck" class="KarteOEPNV" id="rpc_tools.karte_oepnv" image="Images\TmStopHidingSelected16.png" message="" tip="Karte mit OEPNV-Verbindungen im Browser anzeigen">
+                <Button caption="OEPNV-Karte aufrufen" category="ProjektCheck" class="KarteOEPNV" id="rpc_tools.karte_oepnv" image="Images\oepnvkarte.png" message="" tip="Karte mit OEPNV-Verbindungen im Browser anzeigen">
                     <Help heading="" />
                 </Button>
                 <Button caption="Fahrtzeit zu zentralen Orten ermitteln" category="ProjektCheck" class="FahrtzeitZentraleOrte" id="rpc_tools.fahrtzeit_zentrale_orte" image="Images\RouteFastest16.png" message="" tip="Werktägliche Fahrzeit mit Bus und Bahn zu den zentralen Orten in der Region ermitteln">
