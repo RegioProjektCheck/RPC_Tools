@@ -215,7 +215,11 @@ class TbxNutzungenWohnen(TbxNutzungen):
                 tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
                 area, i = self.get_selected_area()
                 tfl_hektar = area['Flaeche_ha']
-                tbl_we_typ = self.table_to_dataframe('WE_nach_Gebietstyp')
+                tbl_we_typ = self.table_to_dataframe(
+                    'WE_nach_Gebietstyp',
+                    workspace='FGDB_Definition_Projekt_Tool.gdb',
+                    is_base_table=True
+                )
                 tbl_we_typ = tbl_we_typ.loc[tbl_we_typ['Gebietstyp'] == params.wohntyp.value]
                 anzahl_efh = int(tbl_we_typ.iloc[0].loc["WE_pro_Hektar"] * tfl_hektar)
                 anzahl_dh = int(tbl_we_typ.iloc[1].loc["WE_pro_Hektar"] * tfl_hektar)
