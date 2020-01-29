@@ -118,9 +118,9 @@
                 <Tool caption="Netzlinien ausw&#228;hlen und l&#246;schen" category="ProjektCheck" class="NetzabschnittLoeschen" id="rpc_tools.netzabschnitt_loeschen" image="Images\TinEditingTinBreaklineDelete16.png" message="" tip="Löschen Sie Linienabschnitte aus allen Erschließungsnetze indem Sie sie einen Löschbereich in der Karte aufziehen.">
                     <Help heading="" />
                 </Tool>
-				<Button caption="Infrastrukturmengen kontrollieren" category="ProjektCheck" class="InfrastrukturmengenKontrollieren" id="rpc_tools.infrastrukturmengen_kontrollieren" image="Images\400000-ruler.png" message="" tip="Kontrolle der ermittelten Infrastrukturmengen">
-                    <Help heading="" />
-                </Button>
+                <!--<Button caption="Infrastrukturmengen kontrollieren" category="ProjektCheck" class="InfrastrukturmengenKontrollieren" id="rpc_tools.infrastrukturmengen_kontrollieren" image="Images\400000-ruler.png" message="" tip="Kontrolle der ermittelten Infrastrukturmengen">-->
+                    <!--<Help heading="" />-->
+                <!--</Button>-->
                 <Button caption="Infrastrukturmengen bilanzieren" category="ProjektCheck" class="InfrastrukturmengenBilanzieren" id="rpc_tools.infrastrukturmengen_bilanzieren" image="Images\400000-ruler.png" message="" tip="Länge der bisher in der Karte eingezeichneten Erschließungsnetze sowie Gesamtkosten der punktuellen Maßnahmen aufsummieren und in zwei Diagrammen anzeigen lassen">
                     <Help heading="" />
                 </Button>
@@ -487,7 +487,7 @@
                         <Button refID="rpc_tools.haltestellen_ermitteln" />
                         <Button refID="rpc_tools.haltestellen_anzeigen" />
                         <Button refID="rpc_tools.haltestellenplan" />
-						<Button refID="rpc_tools.karte_oepnv" />
+                        <Button refID="rpc_tools.karte_oepnv" />
                         <Button refID="rpc_tools.fahrtzeit_zentrale_orte" />
                     </Items>
                 </Menu>
@@ -651,7 +651,7 @@
                         <Menu refID="rpc_tools.menu_erschliessungsnetze_skizzieren" />
                         <Menu refID="rpc_tools.menu_punktuelle_massnahmen" />
                         <Button refID="rpc_tools.infrastrukturmengen_bilanzieren" separator="true"/>
-			<Button refID="rpc_tools.infrastrukturmengen_kontrollieren" separator="true"/>
+                        <!--<Button refID="rpc_tools.infrastrukturmengen_kontrollieren" separator="true"/>-->
                         <Button refID="rpc_tools.kostenkennwerte_kontrollieren" />
                         <Button refID="rpc_tools.gesamtkosten_ermitteln" />
                         <Button refID="rpc_tools.kostenaufteilung" separator="true"/>

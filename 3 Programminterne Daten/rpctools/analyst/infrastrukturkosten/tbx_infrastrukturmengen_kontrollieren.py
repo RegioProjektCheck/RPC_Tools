@@ -56,7 +56,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         pass
 
     def _getParameterInfo(self):
-        params = self.par  
+        params = self.par
         p = self.add_parameter('projectname')
         p.name = u'Projekt'
         p.displayName = u'Projekt'
@@ -67,14 +67,15 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.filter.list = projects
         p.value = '' if len(projects) == 0 else p.filter.list[0]
 
+        values = [u"Infrastrukturmengen manuell eingeben", u"Infrastrukturmengen aus Zeichnungen importieren", u"Infrastrukturmengen schätzen lassen"]
         param = self.add_parameter('Quelle')
         param.name = u'Quelle'
         param.displayName = u'Quelle der Infrastrukturmenge bestimmen'
         param.parameterType = 'Required'
         param.direction = 'Input'
         param.datatype = u'GPString'
-        param.filter.list = [u"Infrastrukturmengen manuell eingeben", u"Infrastrukturmengen aus Zeichnungen importieren", u"Infrastrukturmengen schätzen lassen"]
-        param.value = self.values[0]
+        param.filter.list = values
+        param.value = values[0]
 
         p = self.add_parameter('anlieger_aussen')
         p.name = u'anlieger_aussen'
