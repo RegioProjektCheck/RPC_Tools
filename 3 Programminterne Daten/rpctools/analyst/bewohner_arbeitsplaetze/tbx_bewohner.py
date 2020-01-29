@@ -12,9 +12,9 @@ import arcpy
 class Bewohner(Tool):
     _param_projectname = 'projectname'
     _workspace = 'FGDB_Bewohner_Arbeitsplaetze.gdb'
-    
+
     def add_outputs(self):
-        
+
         area, idx = self.parent_tbx.get_selected_area()
         if area['WE_gesamt'] == 0:
             arcpy.AddError(u'Die Detailangaben zu Teilfläche "{}" fehlen!'
@@ -27,6 +27,7 @@ class Bewohner(Tool):
         self.output.add_diagram(diagram)
 
     def run(self):
+        return
         area, idx = self.parent_tbx.get_selected_area()
 
         fields = ['IDAltersklasse', 'Bewohner']
@@ -84,7 +85,7 @@ class Bewohner(Tool):
 
 class TbxBewohner(TbxFlaechendefinition):
     _nutzungsart = Nutzungsart.WOHNEN
-    
+
     @property
     def Tool(self):
         return Bewohner
@@ -92,28 +93,28 @@ class TbxBewohner(TbxFlaechendefinition):
     @property
     def label(self):
         return u'Bewohnerzahl schätzen'
-    
+
     def set_selected_area(self):
         pass
 
-    def _getParameterInfo(self):
+    #def _getParameterInfo(self):
 
-        super(TbxBewohner, self)._getParameterInfo()
+        #super(TbxBewohner, self)._getParameterInfo()
 
-        # Beginn der Aufsiedlung (Jahreszahl)
-        param = self.add_parameter('anteilU18')
-        param.name = u'anteilU18'
-        param.displayName = u'Anteil an unter 18-Jährigen (in Prozent)'
-        param.parameterType = 'Required'
-        param.direction = 'Input'
-        param.datatype = u'Long'
-        param.filter.type = 'Range'
-        param.filter.list = [0, 40]
-        param.value = 31
+        ## Beginn der Aufsiedlung (Jahreszahl)
+        #param = self.add_parameter('anteilU18')
+        #param.name = u'anteilU18'
+        #param.displayName = u'Anteil an unter 18-Jährigen (in Prozent)'
+        #param.parameterType = 'Required'
+        #param.direction = 'Input'
+        #param.datatype = u'Long'
+        #param.filter.type = 'Range'
+        #param.filter.list = [0, 40]
+        #param.value = 31
 
-        return self.par
+        #return self.par
 
-    
+
 if __name__ == '__main__':
     t = TbxBewohner()
     params = t.getParameterInfo()
