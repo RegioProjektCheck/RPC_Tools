@@ -209,27 +209,32 @@ class TbxNutzungenWohnen(TbxNutzungen):
 
         we_changed = False
 
-        if params.changed('wohntyp'):
-            if params.wohntyp.value != "Benutzerdefiniert":
-                tbl_teilflaechen = self.folders.get_table("Teilflaechen_Plangebiet", 'FGDB_Definition_Projekt.gdb')
-                tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
-                area, i = self.get_selected_area()
-                tfl_hektar = area['Flaeche_ha']
-                tbl_we_typ = self.table_to_dataframe(
-                    'WE_nach_Gebietstyp',
-                    workspace='FGDB_Definition_Projekt_Tool.gdb',
-                    is_base_table=True
-                )
-                tbl_we_typ = tbl_we_typ.loc[tbl_we_typ['Gebietstyp'] == params.wohntyp.value]
-                anzahl_efh = int(tbl_we_typ.iloc[0].loc["WE_pro_Hektar"] * tfl_hektar)
-                anzahl_dh = int(tbl_we_typ.iloc[1].loc["WE_pro_Hektar"] * tfl_hektar)
-                anzahl_rh = int(tbl_we_typ.iloc[2].loc["WE_pro_Hektar"] * tfl_hektar)
-                anzahl_mfh = int(tbl_we_typ.iloc[3].loc["WE_pro_Hektar"] * tfl_hektar)
-                self.par[5].value = anzahl_efh
-                self.par[6].value = anzahl_dh
-                self.par[7].value = anzahl_rh
-                self.par[8].value = anzahl_mfh
-                we_changed = True
+        # Note CF: actually this should be done with relation to existing
+        # building types like below
+        if params.changed('wohntyp') and params.wohntyp.value != "Benutzerdefiniert":
+            tbl_teilflaechen = self.folders.get_table("Teilflaechen_Plangebiet", 'FGDB_Definition_Projekt.gdb')
+            tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
+            area, i = self.get_selected_area()
+            tfl_hektar = area['Flaeche_ha']
+            tbl_we_typ = self.table_to_dataframe(
+                'WE_nach_Gebietstyp',
+                workspace='FGDB_Definition_Projekt_Tool.gdb',
+                is_base_table=True
+            )
+            tbl_we_typ = tbl_we_typ.loc[tbl_we_typ['Gebietstyp'] == params.wohntyp.value]
+            anzahl_efh = int(tbl_we_typ.iloc[0].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_dh = int(tbl_we_typ.iloc[1].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_rh = int(tbl_we_typ.iloc[2].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_mfh = int(tbl_we_typ.iloc[3].loc["WE_pro_Hektar"] * tfl_hektar)
+            self.par[5].value = anzahl_efh
+            self.par[6].value = anzahl_dh
+            self.par[7].value = anzahl_rh
+            self.par[8].value = anzahl_mfh
+            self._update_row(area, 1, 'WE', anzahl_efh)
+            self._update_row(area, 2, 'WE', anzahl_dh)
+            self._update_row(area, 3, 'WE', anzahl_rh)
+            self._update_row(area, 4, 'WE', anzahl_mfh)
+            we_changed = True
 
         for gt in self.gebaeudetypen.itervalues():
             if params.changed(gt.param_we):
