@@ -323,49 +323,49 @@ class TbxBodenKontrolle(Tbx):
         cursor = arcpy.da.SearchCursor(tabelle_boden_anteile, fields)
         for row in cursor:
             if row[1] == 0 and row[0] == 1:
-                 params['ueberbauteflaechen_alt'].value = row[2]
+                params['ueberbauteflaechen_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 2:
-                 params['wasser_alt'].value = row[2]
+                params['wasser_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 3:
-                 params['platten_alt'].value = row[2]
+                params['platten_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 4:
-                 params['baeume_alt'].value = row[2]
+                params['baeume_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 5:
-                 params['rasengittersteine_alt'].value = row[2]
+                params['rasengittersteine_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 6:
-                 params['stauden_alt'].value = row[2]
+                params['stauden_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 7:
-                 params['wiese_alt'].value = row[2]
+                params['wiese_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 8:
-                 params['beton_alt'].value = row[2]
+                params['beton_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 9:
-                 params['acker_alt'].value = row[2]
+                params['acker_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 10:
-                 params['kleinpflaster_alt'].value = row[2]
+                params['kleinpflaster_alt'].value = row[2]
             elif row[1] == 0 and row[0] == 11:
-                 params['rasen_alt'].value = row[2]
+                params['rasen_alt'].value = row[2]
             elif row[1] == 1 and row[0] == 1:
-                 params['ueberbauteflaechen_neu'].value = row[2]
+                params['ueberbauteflaechen_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 2:
-                 params['wasser_neu'].value = row[2]
+                params['wasser_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 3:
-                 params['platten_neu'].value = row[2]
+                params['platten_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 4:
-                 params['baeume_neu'].value = row[2]
+                params['baeume_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 5:
-                 params['rasengittersteine_neu'].value = row[2]
+                params['rasengittersteine_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 6:
-                 params['stauden_neu'].value = row[2]
+                params['stauden_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 7:
-                 params['wiese_neu'].value = row[2]
+                params['wiese_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 8:
-                 params['beton_neu'].value = row[2]
+                params['beton_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 9:
-                 params['acker_neu'].value = row[2]
+                params['acker_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 10:
-                 params['kleinpflaster_neu'].value = row[2]
+                params['kleinpflaster_neu'].value = row[2]
             elif row[1] == 1 and row[0] == 11:
-                 params['rasen_neu'].value = row[2]
+                params['rasen_neu'].value = row[2]
 
 
         return
@@ -374,7 +374,7 @@ class TbxBodenKontrolle(Tbx):
     def _updateParameters(self, params):
 
         if params.name.altered and not params.name.hasBeenValidated:
-                self.eingaben_auslesen()
+            self.eingaben_auslesen()
 
         listeSliderID = ['ueberbauteflaechen_alt',
                          'wasser_alt',
@@ -411,8 +411,7 @@ class TbxBodenKontrolle(Tbx):
             if params[r].altered:
                 self.sliderSummenKontrolle(listeSliderID, zielwertSlidersumme)
 
-		return
-
+                return
 
     def bodenbedeckung_eintragen(self, polygon, bodenbedeckung, planfall):
         column_values = {
@@ -420,10 +419,23 @@ class TbxBodenKontrolle(Tbx):
             'SHAPE@': polygon
         }
 
-        if planfall:
-            self.insert_rows_in_table('Bodenbedeckung_Planfall', column_values, "FGDB_Flaeche_und_Oekologie.gdb")
-        else:
-            self.insert_rows_in_table('Bodenbedeckung_Nullfall', column_values, "FGDB_Flaeche_und_Oekologie.gdb")
+        tablename = 'Bodenbedeckung_Planfall' if planfall \
+            else 'Bodenbedeckung_Nullfall'
+
+        table = self.folders.get_table(
+            tablename, "FGDB_Flaeche_und_Oekologie.gdb")
+
+        cursor = arcpy.da.UpdateCursor(table, ["SHAPE@wkt"])
+        for row in cursor:
+            geom = arcpy.FromWKT(row[0])
+            difference = geom.difference(polygon)
+            row[0] = difference.WKT
+            cursor.updateRow(row)
+
+        self.insert_rows_in_table(tablename, column_values,
+                                  "FGDB_Flaeche_und_Oekologie.gdb")
+
+
 
 class TbxBodenEntfernen_Nullfall(Tbx):
     """Toolbox Boden entfernen"""
@@ -586,3 +598,17 @@ class TbxZeichnung_Planfall(Tbx):
         param.datatype = u'GPString'
 
         return params
+
+
+if __name__ == '__main__':
+    from time import time
+    start = time()
+    t = TbxBodenKontrolle()
+    t.getParameterInfo()
+    t.set_active_project()
+    table = t.folders.get_table("Bodenbedeckung_Nullfall", "FGDB_Flaeche_und_Oekologie.gdb")
+    cursor = arcpy.da.SearchCursor(table, ["SHAPE@"])
+    for row in cursor:
+        a = row[0]
+    t.open()
+    t.execute()

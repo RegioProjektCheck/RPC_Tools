@@ -9,6 +9,7 @@ from rpctools.utils.constants import Nutzungsart
 import rpctools.utils.lib_oekologie as lib_oeko
 import os
 
+
 class TbxBodenBewertung(Tbx):
     """'Bodenbedeckung bewerte"""
 
@@ -350,60 +351,60 @@ class TbxBodenBewertung(Tbx):
             cursor = arcpy.da.SearchCursor(tabelle_boden_anteile, fields)
             for row in cursor:
                 if row[1] == 0 and row[0] == 1:
-                	 params['ueberbauteflaechen_alt'].value = row[2]
+                    params['ueberbauteflaechen_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 2:
-                	 params['wasser_alt'].value = row[2]
+                    params['wasser_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 3:
-                	 params['platten_alt'].value = row[2]
+                    params['platten_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 4:
-                	 params['baeume_alt'].value = row[2]
+                    params['baeume_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 5:
-                	 params['stauden_alt'].value = row[2]
+                    params['stauden_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 6:
-                	 params['wiese_alt'].value = row[2]
+                    params['wiese_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 7:
-                	 params['rasen_alt'].value = row[2]
+                    params['rasen_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 8:
-                	 params['rasengittersteine_alt'].value = row[2]
+                    params['rasengittersteine_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 9:
-                	 params['beton_alt'].value = row[2]
+                    params['beton_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 10:
-                	 params['acker_alt'].value = row[2]
+                    params['acker_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 11:
-                	 params['kleinpflaster_alt'].value = row[2]
+                    params['kleinpflaster_alt'].value = row[2]
 
                 elif row[1] == 0 and row[0] == 12:
-                	 params['undefiniert_alt'].value = row[2]
+                    params['undefiniert_alt'].value = row[2]
                 elif row[1] == 1 and row[0] == 1:
-                	 params['ueberbauteflaechen_neu'].value = row[2]
+                    params['ueberbauteflaechen_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 2:
-                	 params['wasser_neu'].value = row[2]
+                    params['wasser_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 3:
-                	 params['platten_neu'].value = row[2]
+                    params['platten_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 4:
-                	 params['baeume_neu'].value = row[2]
+                    params['baeume_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 5:
-                	 params['rasengittersteine_neu'].value = row[2]
+                    params['rasengittersteine_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 6:
-                	 params['stauden_neu'].value = row[2]
+                    params['stauden_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 7:
-                	 params['wiese_neu'].value = row[2]
+                    params['wiese_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 8:
-                	 params['beton_neu'].value = row[2]
+                    params['beton_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 9:
-                	 params['acker_neu'].value = row[2]
+                    params['acker_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 10:
-                	 params['kleinpflaster_neu'].value = row[2]
+                    params['kleinpflaster_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 11:
-                	 params['rasen_neu'].value = row[2]
+                    params['rasen_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 12:
-                	 params['undefiniert_neu'].value = row[2]
+                    params['undefiniert_neu'].value = row[2]
 
         elif type == "zeichnung":
 
             anteile_nullfall, anteile_planfall = lib_oeko.import_zeichenanteile(projektname)
             listeSliderID = ['ueberbauteflaechen_alt',
-                     'wasser_alt',
+                             'wasser_alt',
                      'platten_alt',
                      'baeume_alt',
                      'stauden_alt',
@@ -413,14 +414,14 @@ class TbxBodenBewertung(Tbx):
                      'beton_alt',
                      'acker_alt',
                      'kleinpflaster_alt',
-                      'undefiniert_alt']
+                     'undefiniert_alt']
             pointer = 0
             for slider in listeSliderID:
                 params[slider].value = anteile_nullfall[pointer]
                 pointer += 1
 
             listeSliderID = ['ueberbauteflaechen_neu',
-                         'wasser_neu',
+                             'wasser_neu',
                          'platten_neu',
                          'baeume_neu',
                          'stauden_neu',
@@ -430,14 +431,14 @@ class TbxBodenBewertung(Tbx):
                          'beton_neu',
                          'acker_neu',
                          'kleinpflaster_neu',
-			'undefiniert_neu']
+                         'undefiniert_neu']
             pointer = 0
             for slider in listeSliderID:
                 params[slider].value = anteile_planfall[pointer]
                 pointer += 1
 
             bodenarten = [u'Überbaut',
-                         u'Wasser',
+                          u'Wasser',
                          u'Platten',
                          u'Bäume',
                          u'Stauden',
@@ -447,7 +448,7 @@ class TbxBodenBewertung(Tbx):
                          u'Beton',
                          u'Acker',
                          u'Kleinpflaster',
-			u'Undefiniert']
+                         u'Undefiniert']
 
             self.delete_rows_in_table("Bodenbedeckung_Zeichnung")
             column_values = {"Nullfall": anteile_nullfall,
@@ -468,31 +469,31 @@ class TbxBodenBewertung(Tbx):
             self.par.quelle.value = self.values[0]
 
         listeSliderID_alt = ['ueberbauteflaechen_alt',
-                         'wasser_alt',
-                         'platten_alt',
-                         'baeume_alt',
-                         'rasengittersteine_alt',
-                         'stauden_alt',
-                         'wiese_alt',
-                         'beton_alt',
-                         'acker_alt',
-                         'kleinpflaster_alt',
-                         'rasen_alt',
-						 'undefiniert_alt'
-						 ]
+                             'wasser_alt',
+                             'platten_alt',
+                             'baeume_alt',
+                             'rasengittersteine_alt',
+                             'stauden_alt',
+                             'wiese_alt',
+                             'beton_alt',
+                             'acker_alt',
+                             'kleinpflaster_alt',
+                             'rasen_alt',
+                             'undefiniert_alt'
+                                                 ]
 
         listeSliderID_neu = ['ueberbauteflaechen_neu',
-                         'wasser_neu',
-                         'platten_neu',
-                         'baeume_neu',
-                         'rasengittersteine_neu',
-                         'stauden_neu',
-                         'wiese_neu',
-                         'beton_neu',
-                         'acker_neu',
-                         'kleinpflaster_neu',
-                         'rasen_neu',
-						 'undefiniert_neu']
+                             'wasser_neu',
+                             'platten_neu',
+                             'baeume_neu',
+                             'rasengittersteine_neu',
+                             'stauden_neu',
+                             'wiese_neu',
+                             'beton_neu',
+                             'acker_neu',
+                             'kleinpflaster_neu',
+                             'rasen_neu',
+                             'undefiniert_neu']
 
         if params.quelle.altered and not params.quelle.hasBeenValidated:
             if self.par.quelle.value == self.values[1]:
@@ -535,18 +536,27 @@ class TbxBodenBewertung(Tbx):
 
         self.changed_mode = False
 
-
-
     def bodenbedeckung_eintragen(self, polygon, bodenbedeckung, planfall):
         column_values = {
             'IDBodenbedeckung': bodenbedeckung,
             'SHAPE@': polygon
         }
 
-        if planfall:
-            self.insert_rows_in_table('Bodenbedeckung_Planfall', column_values, "FGDB_Flaeche_und_Oekologie.gdb")
-        else:
-            self.insert_rows_in_table('Bodenbedeckung_Nullfall', column_values, "FGDB_Flaeche_und_Oekologie.gdb")
+        tablename = 'Bodenbedeckung_Planfall' if planfall \
+            else 'Bodenbedeckung_Nullfall'
+
+        table = self.folders.get_table(
+            tablename, "FGDB_Flaeche_und_Oekologie.gdb")
+
+        cursor = arcpy.da.UpdateCursor(table, ["SHAPE@wkt"])
+        for row in cursor:
+            geom = arcpy.FromWKT(row[0])
+            difference = geom.difference(polygon)
+            row[0] = difference.WKT
+            cursor.updateRow(row)
+
+        self.insert_rows_in_table(tablename, column_values,
+                                  "FGDB_Flaeche_und_Oekologie.gdb")
 
     def _updateMessages(self, params):
 
