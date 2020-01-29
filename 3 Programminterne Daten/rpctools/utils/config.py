@@ -18,12 +18,15 @@ from os import mkdir, getenv
 import arcpy
 import json
 import _winreg
+import os
 
 from rpctools.utils.singleton import Singleton
 from rpctools.utils.encoding import encode
 
 
 APPDATA_PATH = join(getenv('LOCALAPPDATA'), 'Projekt-Check')
+DEFAULT_PROJECT_FOLDER = os.path.join(os.path.expanduser('~\Documents'),
+                                      'Projekt-Check Projekte')
 
 
 class Config(object):
@@ -35,7 +38,7 @@ class Config(object):
         'transformation': "DHDN_To_WGS_1984_5x",
         'max_area_distance': 1000,
         'google_api_key': ' AIzaSyDL32xzaNsQmB_fZGU9SF_FtnvJ4ZrwP8g',
-        'project_folder': u''
+        'project_folder': DEFAULT_PROJECT_FOLDER
     }
 
     _config = {}
@@ -237,6 +240,11 @@ class Folders(object):
     @property
     def PROJECT_BASE_PATH(self):
         config = Config()
+        if not os.path.exists(config.project_folder):
+            try:
+                os.mkdir(config.project_folder)
+            except:
+                pass
         return config.project_folder
 
     @property
