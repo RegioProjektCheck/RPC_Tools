@@ -55,6 +55,7 @@ def next_working_day(min_days_infront=2):
         day = df_density.iloc[infront[0]]['Datum']
     return pd.Timestamp(day).date()
 
+
 class HaltestellenZentraleOrte(Tool):
     _param_projectname = 'projectname'
     _workspace = 'FGDB_Erreichbarkeit.gdb'

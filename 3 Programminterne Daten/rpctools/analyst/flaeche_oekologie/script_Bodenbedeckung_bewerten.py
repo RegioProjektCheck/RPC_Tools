@@ -189,6 +189,19 @@ class BodenbedeckungBewertung(Tool):
         # 9 = Wiese
         # 10 = natürliche Wasserflächen
 
+        # WARNING: actually this order should apply (as in params) !?!?!?!
+        # ueberbauteflaechen
+        # wasser
+        # platten
+        # baeume
+        # rasengittersteine
+        # stauden
+        # wiese
+        # beton
+        # acker
+        # kleinpflaster
+        # rasen
+
         faktor_waermespeicherung_nullfall = []
         faktor_waermespeicherung_planfall = []
 
