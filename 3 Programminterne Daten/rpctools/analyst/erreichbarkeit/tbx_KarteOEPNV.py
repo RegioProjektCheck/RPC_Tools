@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import arcpy
-
+from pyproj import Proj, transform
 from rpctools.utils.params import Tbx
 from rpctools.utils.encoding import encode
 import rpctools.utils.chronik as c
@@ -27,6 +27,11 @@ class KarteOEPNV(Tool):
         coordinates = (wmean.calc_weighted_mean(Results.result_block))
         x = coordinates[0]
         y = coordinates[1]
+        arcpy.AddMessage(x)
+        arcpy.AddMessage(y)
+        inProj = Proj(init='epsg:31466')
+        outProj = Proj(init='epsg:4326')
+        x,y = transform(inProj,outProj,x,y)
         arcpy.AddMessage(x)
         arcpy.AddMessage(y)
         url = "https://www.xn--pnvkarte-m4a.de/#{};{};15".format(x, y)

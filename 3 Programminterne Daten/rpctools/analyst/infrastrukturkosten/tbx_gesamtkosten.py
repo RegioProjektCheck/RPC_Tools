@@ -29,7 +29,7 @@ class Gesamtkosten(Tool):
             'Kostenkennwerte_Linienelemente')
         del self.df_costs['IDNetz']
         self.df_lines = self.parent_tbx.table_to_dataframe(
-            'Erschliessungsnetze_Linienelemente')
+            'Erschliessungsnetze_Linienelemente_kontrolliert')
         self.joined_lines_costs = self.df_lines.merge(
             self.df_costs, on='IDNetzelement', how='left')
         self.df_points = self.parent_tbx.table_to_dataframe(

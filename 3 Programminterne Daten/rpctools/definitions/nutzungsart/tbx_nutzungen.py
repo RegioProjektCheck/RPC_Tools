@@ -120,7 +120,13 @@ class TbxNutzungenWohnen(TbxNutzungen):
         param.parameterType = 'Required'
         param.direction = 'Input'
         param.datatype = u'GPString'
-        param.filter.list = ["Einfamilienhäuser auf großen Grundstücken", "Einfamilienhausgebiet mit wenigen Doppelhäusern" , "Einzel-, Doppel- und Reihenhäuser", "Doppel-, Reihen- und Mehrfamilienhäuser", "Reihenhäuser und Stadtvillen", "Geschosswohnungsbau", "Benutzerdefiniert"]
+        param.filter.list = ["Einfamilienhäuser auf großen Grundstücken",
+                             "Einfamilienhausgebiet mit wenigen Doppelhäusern" ,
+                             "Einzel-, Doppel- und Reihenhäuser",
+                             "Doppel-, Reihen- und Mehrfamilienhäuser",
+                             "Reihenhäuser und Stadtvillen",
+                             "Geschosswohnungsbau",
+                             "Benutzerdefiniert"]
         param.value = param.filter.list[6]
         param.category = heading
 
@@ -154,6 +160,53 @@ class TbxNutzungenWohnen(TbxNutzungen):
             param.value = gt.default_ew_je_we
             param.filter.list = self.ew_je_we_range
             param.category = heading
+
+        heading = encode(u"4) Anteil an unter 18-jährigen nach Gebäudetyp")
+        # Anteil u18 nach Gebäudetyp
+        param = self.add_parameter('anteilU18_efh')
+        param.name = u'anteilU18_efh'
+        param.displayName = u'Anteil an unter 18-Jährigen in Einfamilienhäusern'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Long'
+        param.filter.type = 'Range'
+        param.filter.list = [0, 60]
+        param.value = 33
+        param.category = heading
+
+        param = self.add_parameter('anteilU18_dh')
+        param.name = u'anteilU18_dh'
+        param.displayName = u'Anteil an unter 18-Jährigen in Zweifamilien- oder Doppelhäusern'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Long'
+        param.filter.type = 'Range'
+        param.filter.list = [0, 60]
+        param.value = 33
+        param.category = heading
+
+        param = self.add_parameter('anteilU18_rh')
+        param.name = u'anteilU18_rh'
+        param.displayName = u'Anteil an unter 18-Jährigen in Reihenhäusern'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Long'
+        param.filter.type = 'Range'
+        param.filter.list = [0, 60]
+        param.value = 33
+        param.category = heading
+
+        param = self.add_parameter('anteilU18_mfh')
+        param.name = u'anteilU18_mfh'
+        param.displayName = u'Anteil an unter 18-Jährigen in Mehrfamilienhäusern'
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'Long'
+        param.filter.type = 'Range'
+        param.filter.list = [0, 60]
+        param.value = 22
+        param.category = heading
+
 
         return params
 
