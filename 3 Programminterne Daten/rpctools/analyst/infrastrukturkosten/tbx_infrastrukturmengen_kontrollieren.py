@@ -18,20 +18,28 @@ class InfrastrukturmengenKontrolle(Tool):
 
     def run(self):
 
-        fields = ['IDNetz', 'Laenge']
-        tbl_kosten = self.folders.get_table("Erschliessungsnetze_Linienlaengen", 'FGDB_Kosten.gdb')
+        fields = ['IDNetzelement', 'SHAPE_Length']
+        tbl_kosten = self.folders.get_table("Erschliessungsnetze_Linienelemente_kontrolliert", 'FGDB_Kosten.gdb')
         cursor = arcpy.da.UpdateCursor(tbl_kosten, fields)
         for row in cursor:
-            if row[0] == 1:
-                row[1] = self.par[2].value + self.par[4].value
-            if row[0] == 2:
-                row[1] = self.par[1].value + self.par[3].value
-            if row[0] == 3:
-                row[1] = self.par[5].value + self.par[6].value + self.par[7].value
-            if row[0] == 4:
+            if row[0] == 11:
+                row[1] = self.par[3].value 
+            elif row[0] == 12:
+                row[1] = self.par[5].value 
+            elif row[0] == 21:
+                row[1] = self.par[2].value
+            elif row[0] == 22:
+                row[1] = self.par[4].value
+            elif row[0] == 31:
+                row[1] = self.par[6].value
+            elif row[0] == 32:
+                row[1] = self.par[7].value 
+            elif row[0] == 33:
                 row[1] = self.par[8].value
-            if row[0] == 5:
+            elif row[0] == 41:
                 row[1] = self.par[9].value
+            elif row[0] == 51:
+                row[1] = self.par[10].value
 
             cursor.updateRow(row)
         return
@@ -67,15 +75,14 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.filter.list = projects
         p.value = '' if len(projects) == 0 else p.filter.list[0]
 
-        values = [u"Infrastrukturmengen manuell eingeben", u"Infrastrukturmengen aus Zeichnungen importieren", u"Infrastrukturmengen schätzen lassen"]
         param = self.add_parameter('Quelle')
         param.name = u'Quelle'
         param.displayName = u'Quelle der Infrastrukturmenge bestimmen'
         param.parameterType = 'Required'
         param.direction = 'Input'
         param.datatype = u'GPString'
-        param.filter.list = values
-        param.value = values[0]
+        param.filter.list = [u"Infrastrukturmengen manuell eingeben", u"Infrastrukturmengen aus Zeichnungen importieren", u"Infrastrukturmengen schätzen lassen"]
+        param.value = param.filter.list[0]
 
         p = self.add_parameter('anlieger_aussen')
         p.name = u'anlieger_aussen'
@@ -168,6 +175,116 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.value = 0
 
         return params
+
+
+
+    def _updateParameters(self, params):
+        params = self.par
+        
+        if params.projectname.altered and not params.projectname.hasBeenValidated:
+            self.mengen_einlesen("manuell")
+            self.par.Quelle.value = self.par.Quelle.filter.list[0]
+
+        if params.Quelle.altered and not params.Quelle.hasBeenValidated:
+            if self.par.Quelle.value == self.par.Quelle.filter.list[1]:
+                self.mengen_einlesen("zeichnung")
+            if self.par.Quelle.value == self.par.Quelle.filter.list[2]:
+                self.mengen_einlesen("schaetzung")
+                
+    def mengen_einlesen(self, Quelle):
+        
+        if Quelle == "zeichnung":
+            self.par[2].value = 0
+            self.par[3].value = 0
+            self.par[4].value = 0
+            self.par[5].value = 0
+            self.par[6].value = 0
+            self.par[7].value = 0
+            self.par[8].value = 0
+            self.par[9].value = 0
+            self.par[10].value = 0
+            
+            fields = ['IDNetzelement', 'SHAPE_Length']
+            tbl_kosten = self.folders.get_table("Erschliessungsnetze_Linienelemente", 'FGDB_Kosten.gdb')
+            cursor = arcpy.da.SearchCursor(tbl_kosten, fields)
+            for row in cursor:
+                if row[0] == 11:
+                    self.par[3].value += row[1] 
+                elif row[0] == 12:
+                    self.par[5].value += row[1] 
+                elif row[0] == 21:
+                    self.par[2].value += row[1]  
+                elif row[0] == 22:
+                    self.par[4].value += row[1]  
+                elif row[0] == 31:
+                    self.par[6].value += row[1] 
+                elif row[0] == 32:
+                    self.par[7].value += row[1]   
+                elif row[0] == 33:
+                    self.par[8].value += row[1]  
+                elif row[0] == 41:
+                    self.par[9].value += row[1]  
+                elif row[0] == 51:
+                    self.par[10].value += row[1]
+                    
+        elif Quelle == "schaetzung":
+            self.par[2].value = 0
+            self.par[3].value = 0
+            self.par[4].value = 0
+            self.par[5].value = 0
+            self.par[6].value = 0
+            self.par[7].value = 0
+            self.par[8].value = 0
+            self.par[9].value = 0
+            self.par[10].value = 0
+            
+            fields = ['IDNetzelement', 'SHAPE_Length']
+            tbl_kosten = self.folders.get_table("Mengenkennwerte_Gebietstyp", 'FGDB_Kosten.gdb')
+            cursor = arcpy.da.SearchCursor(tbl_kosten, fields)
+            for row in cursor:
+                if row[0] == 11:
+                    self.par[3].value += row[1] 
+                elif row[0] == 12:
+                    self.par[5].value += row[1] 
+                elif row[0] == 21:
+                    self.par[2].value += row[1]  
+                elif row[0] == 22:
+                    self.par[4].value += row[1]  
+                elif row[0] == 31:
+                    self.par[6].value += row[1] 
+                elif row[0] == 32:
+                    self.par[7].value += row[1]   
+                elif row[0] == 33:
+                    self.par[8].value += row[1]  
+                elif row[0] == 41:
+                    self.par[9].value += row[1]  
+                elif row[0] == 51:
+                    self.par[10].value += row[1]
+                    
+        elif Quelle == "manuell":      
+            fields = ['IDNetzelement', 'SHAPE_Length']
+            tbl_kosten = self.folders.get_table("Erschliessungsnetze_Linienelemente_kontrolliert", 'FGDB_Kosten.gdb')
+            cursor = arcpy.da.SearchCursor(tbl_kosten, fields)
+            for row in cursor:
+                if row[0] == 11:
+                    self.par[3].value = row[1] 
+                elif row[0] == 12:
+                    self.par[5].value = row[1] 
+                elif row[0] == 21:
+                    self.par[2].value = row[1]  
+                elif row[0] == 22:
+                    self.par[4].value = row[1]  
+                elif row[0] == 31:
+                    self.par[6].value = row[1] 
+                elif row[0] == 32:
+                    self.par[7].value = row[1]   
+                elif row[0] == 33:
+                    self.par[8].value = row[1]  
+                elif row[0] == 41:
+                    self.par[9].value = row[1]  
+                elif row[0] == 51:
+                    self.par[10].value = row[1]  
+
 
 
 if __name__ == '__main__':
