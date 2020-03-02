@@ -162,51 +162,20 @@ class TbxNutzungenWohnen(TbxNutzungen):
             param.category = heading
 
         heading = encode(u"4) Anteil an unter 18-jährigen nach Gebäudetyp")
+
         # Anteil u18 nach Gebäudetyp
-        param = self.add_parameter('anteilU18_efh')
-        param.name = u'anteilU18_efh'
-        param.displayName = u'Anteil an unter 18-Jährigen in Einfamilienhäusern'
-        param.parameterType = 'Required'
-        param.direction = 'Input'
-        param.datatype = u'Long'
-        param.filter.type = 'Range'
-        param.filter.list = [0, 60]
-        param.value = 33
-        param.category = heading
-
-        param = self.add_parameter('anteilU18_dh')
-        param.name = u'anteilU18_dh'
-        param.displayName = u'Anteil an unter 18-Jährigen in Zweifamilien- oder Doppelhäusern'
-        param.parameterType = 'Required'
-        param.direction = 'Input'
-        param.datatype = u'Long'
-        param.filter.type = 'Range'
-        param.filter.list = [0, 60]
-        param.value = 33
-        param.category = heading
-
-        param = self.add_parameter('anteilU18_rh')
-        param.name = u'anteilU18_rh'
-        param.displayName = u'Anteil an unter 18-Jährigen in Reihenhäusern'
-        param.parameterType = 'Required'
-        param.direction = 'Input'
-        param.datatype = u'Long'
-        param.filter.type = 'Range'
-        param.filter.list = [0, 60]
-        param.value = 33
-        param.category = heading
-
-        param = self.add_parameter('anteilU18_mfh')
-        param.name = u'anteilU18_mfh'
-        param.displayName = u'Anteil an unter 18-Jährigen in Mehrfamilienhäusern'
-        param.parameterType = 'Required'
-        param.direction = 'Input'
-        param.datatype = u'Long'
-        param.filter.type = 'Range'
-        param.filter.list = [0, 60]
-        param.value = 22
-        param.category = heading
-
+        for gt in self.gebaeudetypen.itervalues():
+            param = self.add_parameter(gt.param_anteil_u18)
+            param.name = encode(u'U18 {}'.format(gt.display_name))
+            param.displayName = encode(u'Anteil an unter 18-Jährigen in  {}'
+                                       .format(gt.display_name))
+            param.parameterType = 'Required'
+            param.direction = 'Input'
+            param.datatype = u'Long'
+            param.filter.type = 'Range'
+            param.value = gt.default_anteil_u18
+            param.filter.list = [0, 60]
+            param.category = heading
 
         return params
 
@@ -229,14 +198,16 @@ class TbxNutzungenWohnen(TbxNutzungen):
         # if there are no values defined yet, set to default values
         if len(rows) == 0:
             columns=['IDTeilflaeche', 'IDGebaeudetyp',
-                     'WE', 'EW_je_WE']
+                     'WE', 'EW_je_WE', 'Anteil_U18']
             for gt in self.gebaeudetypen.itervalues():
                 we = 0
                 ew_je_we = gt.default_ew_je_we
+                u18 = gt.default_anteil_u18
                 self.par[gt.param_we].value = we
                 self.par[gt.param_ew_je_we].value = ew_je_we
+                self.par[gt.param_anteil_u18].value = u18
                 row = pd.DataFrame([[area['id_teilflaeche'], gt.typ_id,
-                                     we, ew_je_we]],
+                                     we, ew_je_we, u18]],
                                    columns=columns)
                 self.df_acc_units = self.df_acc_units.append(
                     row, ignore_index=True)
@@ -247,6 +218,7 @@ class TbxNutzungenWohnen(TbxNutzungen):
                 gt = self.gebaeudetypen[row['IDGebaeudetyp']]
                 self.par[gt.param_we].value = row['WE']
                 self.par[gt.param_ew_je_we].value = row['EW_je_WE']
+                self.par[gt.param_anteil_u18].value = row['Anteil_U18']
 
     def _update_row(self, area, geb_typ, key, value):
         area_id = area['id_teilflaeche']
@@ -297,6 +269,9 @@ class TbxNutzungenWohnen(TbxNutzungen):
             elif params.changed(gt.param_ew_je_we):
                 self._update_row(area, gt.typ_id, 'EW_je_WE',
                                  self.par[gt.param_ew_je_we].value)
+            elif params.changed(gt.param_anteil_u18):
+                self._update_row(area, gt.typ_id, 'Anteil_U18',
+                                 self.par[gt.param_anteil_u18].value)
 
         if we_changed:
             if not params.changed('wohntyp'):
@@ -683,20 +658,20 @@ class TbxNutzungenEinzelhandel(TbxNutzungen):
         return params
 
 if __name__ == '__main__':
-    #t = TbxNutzungenWohnen()
-    #t.getParameterInfo()
-    #t.set_active_project()
-    #t.validate_inputs()
-    #t.open()
-    #t._updateParameters(t.par)
-    #t.execute()
-    t = TbxNutzungenGewerbe()
+    t = TbxNutzungenWohnen()
     t.getParameterInfo()
     t.set_active_project()
     t.validate_inputs()
     t.open()
     t._updateParameters(t.par)
     t.execute()
+    #t = TbxNutzungenGewerbe()
+    #t.getParameterInfo()
+    #t.set_active_project()
+    #t.validate_inputs()
+    #t.open()
+    #t._updateParameters(t.par)
+    #t.execute()
     #t.commit_tfl_changes()
     #t.tool.calculate_ways()
     #t.tool.update_wege_projekt()

@@ -11,7 +11,9 @@ class Gebaeudetyp(object):
                  param_we,
                  param_ew_je_we,
                  display_name,
-                 default_ew_je_we):
+                 default_ew_je_we,
+                 param_anteil_u18,
+                 default_anteil_u18):
         """
         Gebäudetyp
 
@@ -30,6 +32,8 @@ class Gebaeudetyp(object):
         self.param_ew_je_we = param_ew_je_we
         self.display_name = display_name
         self.default_ew_je_we = default_ew_je_we
+        self.param_anteil_u18 = param_anteil_u18
+        self.default_anteil_u18 = default_anteil_u18
 
 
 class Gebaeudetypen(OrderedDict):
@@ -39,7 +43,8 @@ class Gebaeudetypen(OrderedDict):
         table = folders.get_base_table(
             'FGDB_Definition_Projekt_Tool.gdb', 'Wohnen_Gebaeudetypen')
         fields = ['IDGebaeudetyp', 'NameGebaeudetyp', 'param_we',
-                  'param_ew_je_we', 'display_name', 'default_ew_je_we']
+                  'param_ew_je_we', 'display_name', 'default_ew_je_we',
+                  'param_anteil_u18', 'default_anteil_u18']
         rows = arcpy.da.SearchCursor(table, fields)
         for row in rows:
             self[row[0]] = Gebaeudetyp(*row)

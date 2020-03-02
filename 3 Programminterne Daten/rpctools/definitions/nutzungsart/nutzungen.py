@@ -127,37 +127,7 @@ class NutzungenWohnen(Nutzungen):
             ew_base_table, workspace='FGDB_Bewohner_Arbeitsplaetze_Tool.gdb',
             is_base_table=True)
 
-        # Apply weight factor based on user-defined proportion of persons < 18
 
-        base_factor_u18_efh = 33.0
-        base_factor_u18_dh = 33.0
-        base_factor_u18_rh = 33.0
-        base_factor_u18_mfh = 22.0
-
-        user_factor_u18_efh = self.par["anteilU18_efh"].value
-        user_factor_u18_dh = self.par["anteilU18_dh"].value
-        user_factor_u18_rh = self.par["anteilU18_rh"].value
-        user_factor_u18_mfh = self.par["anteilU18_mfh"].value
-
-        weight_u18_efh = user_factor_u18_efh / base_factor_u18_efh
-        weight_u18_dh = user_factor_u18_dh / base_factor_u18_dh
-        weight_u18_rh = user_factor_u18_rh / base_factor_u18_rh
-        weight_u18_mfh = user_factor_u18_mfh / base_factor_u18_mfh
-
-        weight_o18_efh = (100 - user_factor_u18_efh) / (100 - base_factor_u18_efh)
-        weight_o18_dh = (100 - user_factor_u18_dh) / (100 - base_factor_u18_dh)
-        weight_o18_rh = (100 - user_factor_u18_rh) / (100 - base_factor_u18_rh)
-        weight_o18_mfh = (100 - user_factor_u18_mfh) / (100 - base_factor_u18_mfh) 
- 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) & (ew_base_df['IDGebaeudetyp'] == 1), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_u18_efh 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) & (ew_base_df['IDGebaeudetyp'] == 1), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_o18_efh 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) & (ew_base_df['IDGebaeudetyp'] == 2), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_u18_dh 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) & (ew_base_df['IDGebaeudetyp'] == 2), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_o18_dh
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) & (ew_base_df['IDGebaeudetyp'] == 3), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_u18_rh 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) & (ew_base_df['IDGebaeudetyp'] == 3), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_o18_rh
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) & (ew_base_df['IDGebaeudetyp'] == 4), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_u18_mfh 
-        ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) & (ew_base_df['IDGebaeudetyp'] == 4), ["Einwohner"]] = ew_base_df["Einwohner"] * weight_o18_mfh
-        
         # prepare the base table, take duration as age reference for development
         # over years
         ew_base_df['reference'] = 1
@@ -174,6 +144,23 @@ class NutzungenWohnen(Nutzungen):
                              u'wurden noch nicht definiert. Die Teilfläche '
                              u'wird ignoriert.'.format(name))
             return
+
+        # Apply weight factor based on user-defined proportion of persons < 18
+        df_acc_units = self.parent_tbx.df_acc_units[
+            self.parent_tbx.df_acc_units['IDTeilflaeche'] == flaechen_id]
+        for gt in self.parent_tbx.gebaeudetypen.itervalues():
+            base_factor_u18 = float(gt.default_anteil_u18)
+            user_factor_u18 = df_acc_units[
+                df_acc_units['IDGebaeudetyp']==gt.typ_id]
+            user_factor_u18 = user_factor_u18['Anteil_U18'].values[0]
+            weight_u18 = user_factor_u18 / base_factor_u18
+            weight_o18 = (100 - user_factor_u18) / (100 - base_factor_u18)
+            ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) &
+                           (ew_base_df['IDGebaeudetyp'] == gt.typ_id),
+                           ["Einwohner"]] *= weight_u18
+            ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) &
+                           (ew_base_df['IDGebaeudetyp'] == gt.typ_id),
+                           ["Einwohner"]] *= weight_o18
 
         # corresponding SQL: Einwohner_pro_WE INNER JOIN
         # Wohnen_Struktur_und_Alterung_WE ON
