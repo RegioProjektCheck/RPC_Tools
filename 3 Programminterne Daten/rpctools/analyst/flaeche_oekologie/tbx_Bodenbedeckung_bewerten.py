@@ -359,22 +359,22 @@ class TbxBodenBewertung(Tbx):
                 elif row[1] == 0 and row[0] == 4:
                     params['baeume_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 5:
-                    params['stauden_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 6:
-                    params['wiese_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 7:
-                    params['rasen_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 8:
                     params['rasengittersteine_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 9:
+                elif row[1] == 0 and row[0] == 6:
+                    params['stauden_alt'].value = row[2]
+                elif row[1] == 0 and row[0] == 7:
+                    params['wiese_alt'].value = row[2]
+                elif row[1] == 0 and row[0] == 8:
                     params['beton_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 10:
+                elif row[1] == 0 and row[0] == 9:
                     params['acker_alt'].value = row[2]
-                elif row[1] == 0 and row[0] == 11:
+                elif row[1] == 0 and row[0] == 10:
                     params['kleinpflaster_alt'].value = row[2]
-
+                elif row[1] == 0 and row[0] == 11:
+                    params['rasen_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 12:
                     params['undefiniert_alt'].value = row[2]
+                    
                 elif row[1] == 1 and row[0] == 1:
                     params['ueberbauteflaechen_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 2:

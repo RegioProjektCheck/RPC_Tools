@@ -239,7 +239,7 @@ class ProjektAnlegen(Projektverwaltung):
         arcpy.AddField_management(tfl, "ew", "LONG")
         arcpy.AddField_management(tfl, "Wege_gesamt", "LONG")
         arcpy.AddField_management(tfl, "Wege_MIV", "LONG")
-        arcpy.AddField_management(tfl, "Gebietstyp", "TEXT")
+        arcpy.AddField_management(tfl, "IDGebietstyp", "TEXT")
         
         #arcpy.AddField_management(teilfaechen_plangebiet, "Bilanzsumme", "FLOAT")
         return tfl, gdbPfad

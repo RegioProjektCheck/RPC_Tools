@@ -6,6 +6,7 @@ from rpctools.utils.encoding import encode
 from rpctools.analyst.infrastrukturkosten.kostenkennwerte_hilfsfunktionen import kostenkennwerte
 import numpy as np
 import pandas as pd
+import os
 
 
 class InfrastrukturmengenKontrolle(Tool):
@@ -241,33 +242,26 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
             self.par[9].value = 0
             self.par[10].value = 0
 
-            fields = ['IDNetzelement', 'SHAPE_Length']
-            tbl_kosten = self.folders.get_table("Mengenkennwerte_Gebietstyp", 'FGDB_Kosten.gdb')
-            # CF: there is only this table but without the column
-            # "IDNetzelement" and with too many rows (where is Gebietstyp
-            # supposed to come from?)
-            #tbl_kosten = self.folders.get_base_table(
-                #'FGDB_Kosten_Tool.gdb', 'Mengenkennwerte_Gebietstyp')
-            cursor = arcpy.da.SearchCursor(tbl_kosten, fields)
-            for row in cursor:
-                if row[0] == 11:
-                    self.par[3].value += row[1]
-                elif row[0] == 12:
-                    self.par[5].value += row[1]
-                elif row[0] == 21:
-                    self.par[2].value += row[1]
-                elif row[0] == 22:
-                    self.par[4].value += row[1]
-                elif row[0] == 31:
-                    self.par[6].value += row[1]
-                elif row[0] == 32:
-                    self.par[7].value += row[1]
-                elif row[0] == 33:
-                    self.par[8].value += row[1]
-                elif row[0] == 41:
-                    self.par[9].value += row[1]
-                elif row[0] == 51:
-                    self.par[10].value += row[1]
+            fields = ['Flaeche_ha', 'IDGebietstyp']
+            tbl_areas = self.folders.get_table('Teilflaechen_Plangebiet', 'FGDB_Definition_Projekt.gdb')
+            cursor_areas = arcpy.da.SearchCursor(tbl_areas, fields)
+
+            fields = ['IDGebietstyp', 'IDNetzelement', 'Meter_pro_ha_Bruttoflaeche']
+            tbl_kosten = self.folders.get_base_table(workspace = 'FGDB_Kosten_Tool.gdb', table = 'Mengenkennwerte')
+            cursor_quantities = arcpy.da.SearchCursor(tbl_kosten, fields)
+            
+            for area in cursor_areas:
+                for row in cursor_quantities:
+                    if row[1] == 11 & row[0] == area[1]:
+                        self.par[3].value += int(round(area[0] * row[2]))
+                    elif row[1] == 12 & row[0] == area[1]:
+                        self.par[5].value += int(round(area[0] * row[2]))
+                    elif row[1] == 31 & row[0] == area[1]:
+                        self.par[6].value += int(round(area[0] * row[2]))
+                    elif row[1] == 41 & row[0] == area[1]:
+                        self.par[9].value += int(round(area[0] * row[2]))
+                    elif row[1] == 51 & row[0] == area[1]:
+                        self.par[10].value += int(round(area[0] * row[2]))
 
         elif Quelle == "manuell":
             fields = ['IDNetzelement', 'SHAPE_Length']
