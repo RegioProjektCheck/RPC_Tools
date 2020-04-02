@@ -14,7 +14,7 @@ class KostentraegerAuswerten(Gesamtkosten):
     _shares_results_table = 'Gesamtkosten_nach_Traeger'
 
     def add_outputs(self):
-        kosten_diagram = KostentraegerDiagramm()
+        kosten_diagram = KostentraegerDiagramm(years=self.years)
 
         self.output.add_diagram(kosten_diagram)
 

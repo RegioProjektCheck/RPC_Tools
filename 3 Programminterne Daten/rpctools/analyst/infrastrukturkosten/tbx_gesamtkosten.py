@@ -18,7 +18,7 @@ class Gesamtkosten(Tool):
     years = 25
 
     def add_outputs(self):
-        kosten_diagram = GesamtkostenDiagramm()
+        kosten_diagram = GesamtkostenDiagramm(years=self.years)
 
         self.output.add_diagram(kosten_diagram)
 
@@ -46,7 +46,7 @@ class Gesamtkosten(Tool):
 
         arcpy.AddMessage(u'Berechne Gesamtkosten der Phasen {}\n{}...'
                          .format(
-                             u' für die ersten {} Jahre'.format(self.years),
+                             u'für die ersten {} Jahre'.format(self.years),
                              u', \n'.join(self.df_phases['Kostenphase'].tolist())
                          ))
         self.parent_tbx.delete_rows_in_table(self._costs_results_table)
