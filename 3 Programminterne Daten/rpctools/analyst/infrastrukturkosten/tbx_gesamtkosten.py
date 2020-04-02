@@ -15,7 +15,7 @@ class Gesamtkosten(Tool):
     _workspace = 'FGDB_Kosten.gdb'
     _costs_results_table = 'Gesamtkosten'
 
-    years = 20
+    years = 25
 
     def add_outputs(self):
         kosten_diagram = GesamtkostenDiagramm()

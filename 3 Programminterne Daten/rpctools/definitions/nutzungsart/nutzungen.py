@@ -148,19 +148,32 @@ class NutzungenWohnen(Nutzungen):
         # Apply weight factor based on user-defined proportion of persons < 18
         df_acc_units = self.parent_tbx.df_acc_units[
             self.parent_tbx.df_acc_units['IDTeilflaeche'] == flaechen_id]
-        for gt in self.parent_tbx.gebaeudetypen.itervalues():
-            base_factor_u18 = float(gt.default_anteil_u18)
+        for bt in self.parent_tbx.gebaeudetypen.itervalues():
+            bt_idx = ew_base_df['IDGebaeudetyp'] == bt.typ_id
+            df_einwohner_bt = ew_base_df[bt_idx]
+            base_factor_u18 = float(bt.default_anteil_u18)
             user_factor_u18 = df_acc_units[
-                df_acc_units['IDGebaeudetyp']==gt.typ_id]
+                    df_acc_units['IDGebaeudetyp']==bt.typ_id]
             user_factor_u18 = user_factor_u18['Anteil_U18'].values[0]
             weight_u18 = user_factor_u18 / base_factor_u18
-            weight_o18 = (100 - user_factor_u18) / (100 - base_factor_u18)
-            ew_base_df.loc[(ew_base_df['IDAltersklasse'] == 1) &
-                           (ew_base_df['IDGebaeudetyp'] == gt.typ_id),
-                           ["Einwohner"]] *= weight_u18
-            ew_base_df.loc[(ew_base_df['IDAltersklasse'] > 1) &
-                           (ew_base_df['IDGebaeudetyp'] == gt.typ_id),
-                           ["Einwohner"]] *= weight_o18
+            for age_we, group in df_einwohner_bt.groupby('AlterWE'):
+                # just one value, but easier to write the sum
+                u18 = group[group['IDAltersklasse'] == 1]['Einwohner'].sum()
+                # weight over 18 as relation of number of inhabitants of age
+                # groups under 18 and over 18 in specific year of housing
+                sum_o18 = group[group['IDAltersklasse'] > 1]['Einwohner'].sum()
+                weight_o18 = (u18 * (1 - weight_u18) + sum_o18) / sum_o18
+                # apply correction factor to age groups over 18 for year of
+                # housing
+                ew_base_df.loc[
+                        (ew_base_df['IDAltersklasse'] > 1) & bt_idx &
+                        (ew_base_df['AlterWE'] == age_we), ["Einwohner"]
+                        ] *= weight_o18
+            # apply correction factor of age group under 18, stays the same
+            # for every year of housing
+            ew_base_df.loc[
+                    (ew_base_df['IDAltersklasse'] == 1) & bt_idx,
+                    ["Einwohner"]] *= weight_u18
 
         # corresponding SQL: Einwohner_pro_WE INNER JOIN
         # Wohnen_Struktur_und_Alterung_WE ON
