@@ -9,6 +9,7 @@ from rpctools.diagrams.diagram_oekologie import Dia_Nullfall
 from rpctools.diagrams.diagram_oekologie import Dia_Planfall
 import rpctools.utils.lib_oekologie as lib_oeko
 
+
 class BodenbedeckungKontrolle(Tool):
     """BodenbedeckungKontrolle"""
 
@@ -106,6 +107,7 @@ class BodenbedeckungEntfernen(Tool):
         arcpy.RefreshTOC()
         arcpy.RefreshActiveView()
 
+
 class BodenbedeckungAnzeigen(Tool):
     """BodenbedeckungAnzeigen"""
 
@@ -115,13 +117,16 @@ class BodenbedeckungAnzeigen(Tool):
     def add_outputs(self):
 
         if self.parent_tbx.nullfall == 1:
-            self.output.add_layer(groupname = "oekologie", featureclass = "Bodenbedeckung_Nullfall", template_layer = "Bodenbedeckung_Nullfall", template_folder="oekologie",  zoom=False, disable_other = True)
+            self.output.add_layer(groupname = "oekologie", featureclass = "Bodenbedeckung_Nullfall", template_layer = "Bodenbedeckung_Nullfall", template_folder="oekologie", zoom=False, disable_other = True)
         else:
-            self.output.add_layer(groupname = "oekologie", featureclass = "Bodenbedeckung_Planfall", template_layer = "Bodenbedeckung_Planfall", template_folder="oekologie",  zoom=False, disable_other = True)
+            self.output.add_layer(groupname = "oekologie", featureclass = "Bodenbedeckung_Planfall", template_layer = "Bodenbedeckung_Planfall", template_folder="oekologie", zoom=False, disable_other = True)
         self.output.show_layers()
+        self.output.enable_layer('Hintergrund')
+        self.output.enable_layer('Umriss des Plangebiets')
 
     def run(self):
         arcpy.AddMessage("Nullfall: " + str(self.parent_tbx.nullfall))
+
 
 class BodenbedeckungZeichnen(Tool):
     """BodenbedeckungZeichnen"""
