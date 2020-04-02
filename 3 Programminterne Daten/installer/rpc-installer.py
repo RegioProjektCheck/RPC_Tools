@@ -12,7 +12,7 @@ from collections import OrderedDict
 import _winreg
 from argparse import ArgumentParser
 
-min_requirement = 10.2
+min_requirement = 10.3
 
 def get_python_path():
     try:
@@ -155,9 +155,9 @@ def install_packages(python_path, install_dir=''):
         args = [os.path.join(python_path, 'Scripts', 'pip.exe'),
                 'install',
                 '-f', wheel_path,
-                os.path.join(wheel_path, filename)
-##        if upgrade:
-##            args.append('--upgrade')
+                os.path.join(wheel_path, filename)]
+        if upgrade:
+            args.append('--upgrade')
         process = subprocess.Popen(args,
                                    shell=True,
                                    stdout=subprocess.PIPE,
@@ -172,8 +172,8 @@ def install_packages(python_path, install_dir=''):
     for package, filename in used_packages.iteritems():
         install_package(package, filename)
 
-##    install_package('rpctools', 'rpctools-1.2-py2-none-any.whl',
-##                    upgrade=True)
+    install_package('rpctools', 'rpctools-1.3-py2-none-any.whl',
+                    upgrade=True)
 
     log('Installation abgeschlossen.')
 

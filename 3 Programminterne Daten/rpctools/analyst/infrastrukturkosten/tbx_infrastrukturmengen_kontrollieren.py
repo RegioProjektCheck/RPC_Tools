@@ -77,8 +77,8 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.value = '' if len(projects) == 0 else p.filter.list[0]
 
         values = [u"Infrastrukturmengen manuell eingeben",
-                  u"Infrastrukturmengen aus Zeichnungen importieren",
-                  u"Infrastrukturmengen schätzen lassen"]
+                  u"Infrastrukturmengen aus Zeichnungen importieren"]
+                  #u"Infrastrukturmengen schätzen lassen"]
         param = self.add_parameter('Quelle')
         param.name = u'Quelle'
         param.displayName = u'Quelle der Infrastrukturmenge bestimmen'
@@ -192,8 +192,8 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         if params.Quelle.altered and not params.Quelle.hasBeenValidated:
             if self.par.Quelle.value == self.par.Quelle.filter.list[1]:
                 self.mengen_einlesen("zeichnung")
-            if self.par.Quelle.value == self.par.Quelle.filter.list[2]:
-                self.mengen_einlesen("schaetzung")
+            #if self.par.Quelle.value == self.par.Quelle.filter.list[2]:
+                #self.mengen_einlesen("schaetzung")
 
     def mengen_einlesen(self, Quelle):
 
@@ -249,7 +249,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
             fields = ['IDGebietstyp', 'IDNetzelement', 'Meter_pro_ha_Bruttoflaeche']
             tbl_kosten = self.folders.get_base_table(workspace = 'FGDB_Kosten_Tool.gdb', table = 'Mengenkennwerte')
             cursor_quantities = arcpy.da.SearchCursor(tbl_kosten, fields)
-            
+
             for area in cursor_areas:
                 for row in cursor_quantities:
                     if row[1] == 11 & row[0] == area[1]:

@@ -650,8 +650,8 @@
                         <Button refID="rpc_tools.erschliessungsnetze_anzeigen" separator="true"/>
                         <Menu refID="rpc_tools.menu_erschliessungsnetze_skizzieren" />
                         <Menu refID="rpc_tools.menu_punktuelle_massnahmen" />
-                        <Button refID="rpc_tools.infrastrukturmengen_bilanzieren" separator="true"/>
                         <Button refID="rpc_tools.infrastrukturmengen_kontrollieren" separator="true"/>
+                        <Button refID="rpc_tools.infrastrukturmengen_bilanzieren" separator="true"/>
                         <Button refID="rpc_tools.kostenkennwerte_kontrollieren" />
                         <Button refID="rpc_tools.gesamtkosten_ermitteln" />
                         <Button refID="rpc_tools.kostenaufteilung" separator="true"/>

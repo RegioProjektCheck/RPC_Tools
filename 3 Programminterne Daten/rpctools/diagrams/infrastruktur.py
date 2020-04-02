@@ -11,7 +11,7 @@ from textwrap import wrap
 
 class NetzlaengenDiagramm(MatplotDiagram):
     def _create(self, **kwargs):
-        line_table = 'Erschliessungsnetze_Linienelemente'
+        line_table = 'Erschliessungsnetze_Linienelemente_kontrolliert'
         self.title = (u"{}: Länge der zusätzlichen Infrastrukturnetze "
                  u"(ohne punktuelle Maßnahmen)".format(
                      self.tbx.par.get_projectname()))
