@@ -164,43 +164,30 @@ class BodenbedeckungBewertung(Tool):
             boden_ha_absolut_planfall[x] = boden_anteile_neu[x] * plangebiet_ha
 
         #Klima
-        waermespeicherung_multiplikator = [0,0,0.1,0.2,0.3,0.3,1,0.8,0.9,1,1]
-        staubbindevermoegen_multiplikator = [0,0,0,0.1,0.1,0.1,0.2,0.8,0.4,0.4,1]
+        waermespeicherung_multiplikator = [0,1,0.1,0.8,0.2,0.9,1,0,0.3,0.3,1]
+        staubbindevermoegen_multiplikator = [0,1,0,0.8,0.1,0.4,0.4,0,0.1,0.1,0.2]
         #Boden
-        schadstoffrueckhaltung_multiplikator = [0,0,0.2,0.3,0.4,0.5,0.8,0.8,0.8,0.8,0]
-        durchlaessigkeit_multiplikator = [0,0.1,0.2,0.4,0.6,1,0.8,1,1,1,1]
-        bodenueberformung_multiplikator = [0,0,0,0,0,0.8,0.8,0.8,0.8,1,1]
+        schadstoffrueckhaltung_multiplikator = [0,0,0.2,0.8,0.4,0.8,0.8,0,0.5,0.3,0.8]
+        durchlaessigkeit_multiplikator = [0,1,0.2,1,0.6,1,1,0.1,1,0.4,0.8]
+        bodenueberformung_multiplikator = [0,1,0,0.8,0,0,1,0.8,0.8,0,0.8]
         #Wasser
-        oberflaechenabfluss_multiplikator = [0,0.1,0.4,0.7,0.6,1,0.8,1,1,1,0]
-        grundwasserneubildung_multiplikator = [0,0,0.3,0.5,0.8,1,0.5,0.4,0.5,0.5,1]
-        regenwasserversickerung_multiplikator = [0,0.1,0.4,0.5,0.5,1,0.8,0.9,0.9,1,1]
+        oberflaechenabfluss_multiplikator = [0,0,0.4,1,0.6,1,1,0.1,1,0.7,0.8]
+        grundwasserneubildung_multiplikator = [0,1,0.3,0.4,0.8,0.5,0.5,0,1,0.5,0.5]
+        regenwasserversickerung_multiplikator = [0,1,0.4,0.9,0.5,0.9,1,0.1,1,0.5,0.8]
         #Biotop
-        biotopausbildungsvermoegen_multiplikator = [0.1,0.1,0.2,0.3,0.4,0.5,0.6,0.9,0.9,1,1]
+        biotopausbildungsvermoegen_multiplikator = [0.1,1,0.2,0.9,0.4,0.9,1,0.1,0.5,0.3,0.6]
 
-        # 0 = Überbaute Fläche
-        # 1 = Asphalt / Beton
-        # 2 = Platten
-        # 3 = Kleinpflaster
-        # 4 = wassergeb. Decke / Rasengittersteine
-        # 5 = offener Boden / Acker
-        # 6 = Rasen
-        # 7 = Bäume / Sträucher
-        # 9 = Stauden
-        # 9 = Wiese
-        # 10 = natürliche Wasserflächen
-
-        # WARNING: actually this order should apply (as in params) !?!?!?!
-        # ueberbauteflaechen
-        # wasser
-        # platten
-        # baeume
-        # rasengittersteine
-        # stauden
-        # wiese
-        # beton
-        # acker
-        # kleinpflaster
-        # rasen
+        # 1 = Überbaute Fläche
+        # 2 = natürliche Wasserflächen
+        # 3 = Platten
+        # 4 = Bäume / Sträucher
+        # 5 = wassergeb. Decke / Rasengittersteine
+        # 6 = Stauden
+        # 7 = Wiese
+        # 8 = Asphalt / Beton
+        # 9 = offener Boden / Acker
+        # 10 = Kleinpflaster
+        # 11 = Rasen
 
         faktor_waermespeicherung_nullfall = []
         faktor_waermespeicherung_planfall = []
