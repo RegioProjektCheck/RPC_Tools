@@ -452,7 +452,8 @@
                     <Button refID="rpc_tools.ueber_rpc" />
                     <Button refID="rpc_tools.haft" />
                     </Items>
-                </Menu>                <Menu caption="Verwalten" category="ProjektCheck" id="rpc_tools.menu_verwalten" isRootMenu="false" isShortcutMenu="true" separator="true">
+                </Menu>
+                <Menu caption="Verwalten" category="ProjektCheck" id="rpc_tools.menu_verwalten" isRootMenu="false" isShortcutMenu="true" separator="true">
                     <Items>
                         <Button refID="rpc_tools.hilfe_verwaltung" />
                         <Button refID="rpc_tools.projektordner" />
@@ -618,12 +619,6 @@
                         <Menu refID="rpc_tools.menu_integrierte_lage" />
                     </Items>
                 </Menu>
-                <Menu caption="Fl&#228;che und &#214;kologie" category="ProjektCheck" id="rpc_tools.menu_flaeche_und_oekologie" isRootMenu="false" isShortcutMenu="true" separator="true">
-                    <Items>
-                        <Menu refID="rpc_tools.menu_oekologie" />
-                        <Menu refID="rpc_tools.menu_flaeche" />
-                    </Items>
-                </Menu>
                 <Menu caption="Erschlie&#223;ungsnetze skizzieren" category="ProjektCheck" id="rpc_tools.menu_erschliessungsnetze_skizzieren" isRootMenu="false" isShortcutMenu="true" separator="true">
                     <Items>
                         <Tool refID="rpc_tools.anliegerstrasse_innere" />
@@ -746,7 +741,8 @@
                         <Menu refID="rpc_tools.menu_bewohner_und_arbeitsplaetze" />
                         <Menu refID="rpc_tools.menu_erreichbarkeit" />
                         <Menu refID="rpc_tools.menu_verkehr_im_umfeld" />
-                        <Menu refID="rpc_tools.menu_flaeche_und_oekologie" />
+                        <Menu refID="rpc_tools.menu_oekologie" />
+                        <Menu refID="rpc_tools.menu_flaeche" />
                         <Menu refID="rpc_tools.menu_infrastrukturkosten" />
                         <Menu refID="rpc_tools.menu_einnahmen" />
                         <Menu refID="rpc_tools.menu_standortkonkurrenz" />

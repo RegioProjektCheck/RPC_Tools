@@ -116,7 +116,8 @@ class TbxNutzungenWohnen(TbxNutzungen):
         # Wohntyp auswaehlen
         param = self.add_parameter('wohntyp')
         param.name = u'Wohntyp'
-        param.displayName = encode(u'Anzahl an Wohneinheiten über Gebietstyp schaetzen')
+        param.displayName = encode(u'Anzahl an Wohneinheiten über Gebietstyp '
+                                   u'schätzen')
         param.parameterType = 'Required'
         param.direction = 'Input'
         param.datatype = u'GPString'
@@ -244,7 +245,7 @@ class TbxNutzungenWohnen(TbxNutzungen):
                 if area[0] == self.par['area'].value:
                     area[1] = self.par['wohntyp'].value
                 cursor_areas.updateRow(area)
-            
+
             tbl_teilflaechen = self.folders.get_table("Teilflaechen_Plangebiet", 'FGDB_Definition_Projekt.gdb')
             tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
             area, i = self.get_selected_area()
@@ -466,7 +467,7 @@ class TbxNutzungenGewerbe(TbxNutzungen):
             if id_gewerbe != Gewerbegebietstyp.BENUTZERDEFINIERT:
                 self.set_gewerbe_presets(id_gewerbe)
                 altered = True
-                self.df_areas.loc[area_idx, 'IDGebietstyp'] = self.df_comm_types[comm_idx]['Name_Gewerbegebietstyp'].values[0]    
+                self.df_areas.loc[area_idx, 'IDGebietstyp'] = self.df_comm_types[comm_idx]['Name_Gewerbegebietstyp'].values[0]
         # check if one of the branchenanteile changed
         elif self.par.changed(*[branche.param_gewerbenutzung
                       for branche in self.branchen.values()]):
