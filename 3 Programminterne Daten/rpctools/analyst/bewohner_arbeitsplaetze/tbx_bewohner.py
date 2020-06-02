@@ -12,9 +12,9 @@ import arcpy
 class Bewohner(Tool):
     _param_projectname = 'projectname'
     _workspace = 'FGDB_Bewohner_Arbeitsplaetze.gdb'
-    
+
     def add_outputs(self):
-        
+
         area, idx = self.parent_tbx.get_selected_area()
         if area['WE_gesamt'] == 0:
             arcpy.AddError(u'Die Detailangaben zu Teilfläche "{}" fehlen!'
@@ -32,7 +32,7 @@ class Bewohner(Tool):
 
 class TbxBewohner(TbxFlaechendefinition):
     _nutzungsart = Nutzungsart.WOHNEN
-    
+
     @property
     def Tool(self):
         return Bewohner
@@ -40,10 +40,14 @@ class TbxBewohner(TbxFlaechendefinition):
     @property
     def label(self):
         return u'Bewohnerzahl schätzen'
-    
+
     def set_selected_area(self):
         pass
-    
+
+    def _getParameterInfo(self):
+        super(TbxBewohner, self)._getParameterInfo()
+        return self.par
+
 if __name__ == '__main__':
     t = TbxBewohner()
     params = t.getParameterInfo()

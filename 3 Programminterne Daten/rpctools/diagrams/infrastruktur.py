@@ -11,7 +11,7 @@ from textwrap import wrap
 
 class NetzlaengenDiagramm(MatplotDiagram):
     def _create(self, **kwargs):
-        line_table = 'Erschliessungsnetze_Linienelemente'
+        line_table = 'Erschliessungsnetze_Linienelemente_kontrolliert'
         self.title = (u"{}: Länge der zusätzlichen Infrastrukturnetze "
                  u"(ohne punktuelle Maßnahmen)".format(
                      self.tbx.par.get_projectname()))
@@ -125,13 +125,14 @@ class MassnahmenKostenDiagramm(MatplotDiagram):
 class GesamtkostenDiagramm(MatplotDiagram):
 
     def _create(self, **kwargs):
+        years = kwargs['years']
         legend = [u'1 - Kosten der erstmaligen Herstellung',
-                  u'2 - Kosten für Betrieb und Unterhaltung in der ersten 20 Jahren',
-                  u'3 - Anteilige Kosten der Erneuerung (bezogen auf einen Zeitraum von 20 Jahren)']
+                  u'2 - Kosten für Betrieb und Unterhaltung in der ersten {} Jahren'.format(years),
+                  u'3 - Anteilige Kosten der Erneuerung (bezogen auf einen Zeitraum von {} Jahren)'.format(years)]
         workspace = 'FGDB_Kosten.gdb'
         table = 'Gesamtkosten'
-        self.title = u"{}: Gesamtkosten der infrastrukturellen Maßnahmen in den ersten 20 Jahren".format(
-            self.tbx.par.get_projectname())
+        self.title = u"{}: Gesamtkosten der infrastrukturellen Maßnahmen in den ersten {} Jahren".format(
+            self.tbx.par.get_projectname(), years)
         x_label = u"Kosten für Netzerweiterungen und punktuelle Maßnahmen"
 
         df_costs = self.tbx.table_to_dataframe(
@@ -191,15 +192,20 @@ def format_func(x, pos):
     s = '{:0,d}'.format(int(x))
     return s
 
+
 class KostentraegerDiagramm(MatplotDiagram):
     colors = ['#005CE6', '#002673', '#894444', '#73FFDF', '#FFFF00']
     def _create(self, **kwargs):
+        years = kwargs['years']
         workspace = 'FGDB_Kosten.gdb'
         table = 'Gesamtkosten_nach_Traeger'
         self.title = (u"{}: Aufteilung der Gesamtkosten "
                       u"auf die Kostenträger".format(
                           self.tbx.par.get_projectname()))
-        y_label = u"Kosten der erstmaligen Herstellung, \nBetriebs- und Unterhaltungskosten in den \nersten 20 Jahren sowie Erneuerungskosten \n(anteilig für die ersten 20 Jahre)"
+        y_label = (u"Kosten der erstmaligen Herstellung, \nBetriebs- und "
+                   u"Unterhaltungskosten in den \nersten {years} Jahren sowie "
+                   u"Erneuerungskosten \n(anteilig für die ersten {years} Jahre)"
+                   .format(years=years))
 
         df_shares = self.tbx.table_to_dataframe(
             table, workspace=workspace

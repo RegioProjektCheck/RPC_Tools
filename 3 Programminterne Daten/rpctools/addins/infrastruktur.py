@@ -17,7 +17,7 @@ __all__ = [
     "InfrastrukturmengenBilanzieren", "GesamtkostenErmitteln",
     "KostenNachKostentraegernAuswerten", "KostenProWEBzwAPVergleichen",
     "KostenkennwerteKontrollieren", "Kostenaufteilung",
-    "PunktMassnahmeHinzu", "PunktMassnahmeBearbeiten"
+    "PunktMassnahmeHinzu", "PunktMassnahmeBearbeiten", "InfrastrukturmengenKontrollieren"
 ]
 
 
@@ -296,6 +296,13 @@ class InfrastrukturmengenBilanzieren(ToolboxButton):
     _pyt_file = 'Infrastrukturkosten.pyt'
     _toolbox_name = 'TbxInfrastrukturmengenBilanz'
     _do_show = False
+
+
+class InfrastrukturmengenKontrollieren(ToolboxButton):
+    """Implementation for rpc_tools.infrastrukturmengen_kontrollieren (Button)"""
+    _path = folders.ANALYST_PYT_PATH
+    _pyt_file = 'Infrastrukturkosten.pyt'
+    _toolbox_name = 'TbxInfrastrukturmengenKontrollieren'
 
 
 class KostenkennwerteKontrollieren(ToolboxButton):

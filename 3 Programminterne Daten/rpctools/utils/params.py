@@ -454,8 +454,12 @@ class Tbx(object):
         if not project_folder:
             return False, (u'Es ist kein Speicherort für Ihre Projekte definiert!')
         elif not os.path.exists(project_folder):
-            return False, (u'Der angegebene Speicherort für Ihre Projekte '
-                           u'existiert nicht (mehr)!')
+            try:
+                os.mkdir(project_folder)
+            except:
+                return False, (u'Der angegebene Speicherort für Ihre Projekte '
+                               u'existiert nicht (mehr) und kann nicht '
+                               u'angelegt werden!')
         return True, ''
 
     def _update_project_list(self):

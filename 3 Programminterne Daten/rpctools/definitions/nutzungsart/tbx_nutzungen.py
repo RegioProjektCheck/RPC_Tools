@@ -111,12 +111,29 @@ class TbxNutzungenWohnen(TbxNutzungen):
         params = super(TbxNutzungenWohnen, self)._getParameterInfo()
 
         # specific parameters for "Wohnen"
-
         heading = encode(u"2) Anzahl Wohneinheiten nach Gebäudetypen")
 
+        # Wohntyp auswaehlen
+        param = self.add_parameter('wohntyp')
+        param.name = u'Wohntyp'
+        param.displayName = encode(u'Anzahl an Wohneinheiten über Gebietstyp '
+                                   u'schätzen')
+        param.parameterType = 'Required'
+        param.direction = 'Input'
+        param.datatype = u'GPString'
+        param.filter.list = ["Einfamilienhäuser auf großen Grundstücken",
+                             "Einfamilienhausgebiet mit wenigen Doppelhäusern" ,
+                             "Einzel-, Doppel- und Reihenhäuser",
+                             "Doppel-, Reihen- und Mehrfamilienhäuser",
+                             "Reihenhäuser und Stadtvillen",
+                             "Geschosswohnungsbau",
+                             "Benutzerdefiniert"]
+        param.value = param.filter.list[6]
+        param.category = heading
+
+        # Anzahl WE in Gebäudetypen
         for gt in self.gebaeudetypen.itervalues():
             assert isinstance(gt, Gebaeudetyp)
-            # Anzahl WE in Gebäudetypen
             param = self.add_parameter(gt.param_we)
             param.name = encode(u'Bewohner {}'.format(gt.display_name))
             param.displayName = encode(u'Anzahl WE in {}'.format(gt.display_name))
@@ -125,7 +142,7 @@ class TbxNutzungenWohnen(TbxNutzungen):
             param.datatype = u'Long'
             param.value = u'0'
             param.filter.type = 'Range'
-            param.filter.list = [0, 500]
+            param.filter.list = [0, 1000]
             param.category = heading
 
         heading = ("3) Mittlere Anzahl Einwohner pro Wohneinheit " +
@@ -143,6 +160,22 @@ class TbxNutzungenWohnen(TbxNutzungen):
             param.datatype = u'GPDouble'
             param.value = gt.default_ew_je_we
             param.filter.list = self.ew_je_we_range
+            param.category = heading
+
+        heading = encode(u"4) Anteil an unter 18-jährigen nach Gebäudetyp")
+
+        # Anteil u18 nach Gebäudetyp
+        for gt in self.gebaeudetypen.itervalues():
+            param = self.add_parameter(gt.param_anteil_u18)
+            param.name = encode(u'U18 {}'.format(gt.display_name))
+            param.displayName = encode(u'Anteil an unter 18-Jährigen in  {}'
+                                       .format(gt.display_name))
+            param.parameterType = 'Required'
+            param.direction = 'Input'
+            param.datatype = u'Long'
+            param.filter.type = 'Range'
+            param.value = gt.default_anteil_u18
+            param.filter.list = [0, 60]
             param.category = heading
 
         return params
@@ -166,14 +199,16 @@ class TbxNutzungenWohnen(TbxNutzungen):
         # if there are no values defined yet, set to default values
         if len(rows) == 0:
             columns=['IDTeilflaeche', 'IDGebaeudetyp',
-                     'WE', 'EW_je_WE']
+                     'WE', 'EW_je_WE', 'Anteil_U18']
             for gt in self.gebaeudetypen.itervalues():
                 we = 0
                 ew_je_we = gt.default_ew_je_we
+                u18 = gt.default_anteil_u18
                 self.par[gt.param_we].value = we
                 self.par[gt.param_ew_je_we].value = ew_je_we
+                self.par[gt.param_anteil_u18].value = u18
                 row = pd.DataFrame([[area['id_teilflaeche'], gt.typ_id,
-                                     we, ew_je_we]],
+                                     we, ew_je_we, u18]],
                                    columns=columns)
                 self.df_acc_units = self.df_acc_units.append(
                     row, ignore_index=True)
@@ -184,6 +219,7 @@ class TbxNutzungenWohnen(TbxNutzungen):
                 gt = self.gebaeudetypen[row['IDGebaeudetyp']]
                 self.par[gt.param_we].value = row['WE']
                 self.par[gt.param_ew_je_we].value = row['EW_je_WE']
+                self.par[gt.param_anteil_u18].value = row['Anteil_U18']
 
     def _update_row(self, area, geb_typ, key, value):
         area_id = area['id_teilflaeche']
@@ -198,6 +234,42 @@ class TbxNutzungenWohnen(TbxNutzungen):
             return params
 
         we_changed = False
+
+        # Note CF: actually this should be done with relation to existing
+        # building types like below
+        if params.changed('wohntyp') and params.wohntyp.value != "Benutzerdefiniert":
+            fields = ['NAME', 'IDGebietstyp']
+            tbl_areas = self.folders.get_table('Teilflaechen_Plangebiet', 'FGDB_Definition_Projekt.gdb')
+            cursor_areas = arcpy.da.UpdateCursor(tbl_areas, fields)
+            for area in cursor_areas:
+                if area[0] == self.par['area'].value:
+                    area[1] = self.par['wohntyp'].value
+                cursor_areas.updateRow(area)
+
+            tbl_teilflaechen = self.folders.get_table("Teilflaechen_Plangebiet", 'FGDB_Definition_Projekt.gdb')
+            tbl_teilflaechen = tbl_teilflaechen[ 'NAME' == self.par['area'].value]
+            area, i = self.get_selected_area()
+            tfl_hektar = area['Flaeche_ha']
+            tbl_we_typ = self.table_to_dataframe(
+                'WE_nach_Gebietstyp',
+                workspace='FGDB_Definition_Projekt_Tool.gdb',
+                is_base_table=True
+            )
+            tbl_we_typ = tbl_we_typ.loc[tbl_we_typ['Gebietstyp'] == params.wohntyp.value]
+            anzahl_efh = int(tbl_we_typ.iloc[0].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_dh = int(tbl_we_typ.iloc[1].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_rh = int(tbl_we_typ.iloc[2].loc["WE_pro_Hektar"] * tfl_hektar)
+            anzahl_mfh = int(tbl_we_typ.iloc[3].loc["WE_pro_Hektar"] * tfl_hektar)
+            self.par[5].value = anzahl_efh
+            self.par[6].value = anzahl_dh
+            self.par[7].value = anzahl_rh
+            self.par[8].value = anzahl_mfh
+            self._update_row(area, 1, 'WE', anzahl_efh)
+            self._update_row(area, 2, 'WE', anzahl_dh)
+            self._update_row(area, 3, 'WE', anzahl_rh)
+            self._update_row(area, 4, 'WE', anzahl_mfh)
+            we_changed = True
+
         for gt in self.gebaeudetypen.itervalues():
             if params.changed(gt.param_we):
                 self._update_row(area, gt.typ_id, 'WE',
@@ -206,12 +278,18 @@ class TbxNutzungenWohnen(TbxNutzungen):
             elif params.changed(gt.param_ew_je_we):
                 self._update_row(area, gt.typ_id, 'EW_je_WE',
                                  self.par[gt.param_ew_je_we].value)
+            elif params.changed(gt.param_anteil_u18):
+                self._update_row(area, gt.typ_id, 'Anteil_U18',
+                                 self.par[gt.param_anteil_u18].value)
 
         if we_changed:
+            if not params.changed('wohntyp'):
+                params.wohntyp.value = "Benutzerdefiniert"
             we_idx = self.df_acc_units['IDTeilflaeche'] == area['id_teilflaeche']
             sums = self.df_acc_units[we_idx]['WE'].sum()
             self.df_areas.loc[area_idx, 'WE_gesamt'] = sums
             self.update_pretty_name()
+
         return params
 
 
@@ -389,6 +467,7 @@ class TbxNutzungenGewerbe(TbxNutzungen):
             if id_gewerbe != Gewerbegebietstyp.BENUTZERDEFINIERT:
                 self.set_gewerbe_presets(id_gewerbe)
                 altered = True
+                self.df_areas.loc[area_idx, 'IDGebietstyp'] = self.df_comm_types[comm_idx]['Name_Gewerbegebietstyp'].values[0]
         # check if one of the branchenanteile changed
         elif self.par.changed(*[branche.param_gewerbenutzung
                       for branche in self.branchen.values()]):
@@ -589,20 +668,20 @@ class TbxNutzungenEinzelhandel(TbxNutzungen):
         return params
 
 if __name__ == '__main__':
-    #t = TbxNutzungenWohnen()
-    #t.getParameterInfo()
-    #t.set_active_project()
-    #t.validate_inputs()
-    #t.open()
-    #t._updateParameters(t.par)
-    #t.execute()
-    t = TbxNutzungenGewerbe()
+    t = TbxNutzungenWohnen()
     t.getParameterInfo()
     t.set_active_project()
     t.validate_inputs()
     t.open()
     t._updateParameters(t.par)
     t.execute()
+    #t = TbxNutzungenGewerbe()
+    #t.getParameterInfo()
+    #t.set_active_project()
+    #t.validate_inputs()
+    #t.open()
+    #t._updateParameters(t.par)
+    #t.execute()
     #t.commit_tfl_changes()
     #t.tool.calculate_ways()
     #t.tool.update_wege_projekt()

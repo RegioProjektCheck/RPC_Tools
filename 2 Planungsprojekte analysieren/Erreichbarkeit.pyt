@@ -6,6 +6,7 @@ from rpctools.analyst.erreichbarkeit.tbx_HaltestellenZentraleOrte import TbxHalt
 from rpctools.analyst.erreichbarkeit.tbx_fahrplaene import TbxFahrplaene
 from rpctools.analyst.erreichbarkeit.tbx_isochrone import TbxIsochrone
 from rpctools.analyst.erreichbarkeit.tbx_Einrichtungen import TbxEinrichtungen
+from rpctools.analyst.erreichbarkeit.tbx_KarteOEPNV import TbxKarteOEPNV
 
 class Toolbox(object):
     def __init__(self):
@@ -15,6 +16,7 @@ class Toolbox(object):
                       TbxFahrplaene,
                       TbxErreichbarkeitOEPNV,
                       TbxIsochrone,
-                      TbxEinrichtungen]
+                      TbxEinrichtungen,
+					  TbxKarteOEPNV]
 
 
