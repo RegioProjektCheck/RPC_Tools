@@ -161,11 +161,11 @@ def Wanderungssalden_schaetzen(self):
         cursor_gemeindebilanz = arcpy.da.SearchCursor(wanderungssalden, ["AGS", "SvB_pro_Ew"])
         for gemeinde in cursor_gemeindebilanz:
             where = '"AGS"' + "='" + gemeinde[0] +"'"
-            cursor_Summe_Ew = arcpy.da.SearchCursor(pfad_Herkunftsraeume_mit_Ew, ["AGS", "Summe_Ew", "distance", "Shape_Area"], where)
+            cursor_Summe_Ew = arcpy.da.SearchCursor(pfad_Herkunftsraeume_mit_Ew, ["AGS", "Summe_Ew", "distance"], where)
             for gemeindeteil in cursor_Summe_Ew:
                 if gemeindeteil[1] >= 1:
-                    Wichtungsfaktor_Wohnen = gemeindeteil[1] * gemeindeteil[3] * Wichtungen_Wohnen[str(int(gemeindeteil[2]))]
-                    Wichtungsfaktor_Gewerbe = gemeindeteil[1] * gemeinde[1] * gemeindeteil[3] * Wichtungen_Gewerbe[str(int(gemeindeteil[2]))]
+                    Wichtungsfaktor_Wohnen = gemeindeteil[1] * Wichtungen_Wohnen[str(int(gemeindeteil[2]))]
+                    Wichtungsfaktor_Gewerbe = gemeindeteil[1] * gemeinde[1] *  Wichtungen_Gewerbe[str(int(gemeindeteil[2]))]
                     herkunftsraeume.append([gemeindeteil[0], Wichtungsfaktor_Wohnen, Wichtungsfaktor_Gewerbe])
                     Summe_Wichtungsfaktoren_Gesamtraum_Wohnen += Wichtungsfaktor_Wohnen
                     Summe_Wichtungsfaktoren_Gesamtraum_Gewerbe += Wichtungsfaktor_Gewerbe
