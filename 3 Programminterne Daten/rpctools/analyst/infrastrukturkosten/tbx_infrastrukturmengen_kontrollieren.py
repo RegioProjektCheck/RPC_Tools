@@ -95,7 +95,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('anlieger_innen')
@@ -105,7 +105,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('sammler_aussen')
@@ -115,7 +115,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('sammler_innen')
@@ -125,7 +125,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('kanal_trenn')
@@ -135,7 +135,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('kanal_misch')
@@ -145,7 +145,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('kanal_schmutz')
@@ -155,7 +155,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('wasser')
@@ -165,7 +165,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         p = self.add_parameter('strom')
@@ -175,7 +175,7 @@ class TbxInfrastrukturmengenKontrollieren(Tbx):
         p.direction = 'Input'
         p.datatype = u'GPLong'
         p.filter.type = 'Range'
-        p.filter.list = [0, 1000]
+        p.filter.list = [0, 10000]
         p.value = 0
 
         return params

@@ -798,6 +798,7 @@ class Output(object):
                     self._show_image(legend)
 
         self.sort_layers()
+        arcpy.RefreshTOC()
         del(current_dataframe)
         del(new_layer)
         del(current_mxd)
