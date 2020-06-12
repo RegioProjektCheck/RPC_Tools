@@ -253,20 +253,7 @@ class BodenbedeckungBewertung(Tool):
             cursor.deleteRow()
 
         def get_kennwert(quotient):
-            if(quotient<0.2):
-                return 1
-            elif(quotient>=0.2 and quotient<0.4):
-                return 2
-            elif(quotient>=0.4 and quotient<0.6):
-                return 3
-            elif(quotient >= 0.6 and quotient<0.8):
-                return 4
-            elif(quotient>=0.8):
-                return 5
-            else:
-                return 0
-
-
+            return round(quotient * 10, 1)
 
         quotient_waermespeicherung_nullfall = sum(faktor_waermespeicherung_nullfall) / 11.0
         waermespeicherung_nullfall = get_kennwert(quotient_waermespeicherung_nullfall)
@@ -316,14 +303,14 @@ class BodenbedeckungBewertung(Tool):
         biotopausbildungsvermoegen_planfall = get_kennwert(quotient_biotopausbildungsvermoegen_planfall)
 
         column_values = {"Kategorie": [u"Nullfall", u"Planfall", u"Veränderung"],
-                                "Schadstoffrueckhaltung": [schadstoffrueckhaltung_nullfall,schadstoffrueckhaltung_planfall,  schadstoffrueckhaltung_planfall - schadstoffrueckhaltung_nullfall],
-                                "Waermespeicherung": [waermespeicherung_nullfall,waermespeicherung_planfall,  waermespeicherung_planfall - waermespeicherung_nullfall],
-                                "Durchlaessigkeit": [durchlaessigkeit_nullfall,durchlaessigkeit_planfall, durchlaessigkeit_planfall - durchlaessigkeit_nullfall],
-                                "Bodenueberformung": [bodenueberformung_nullfall,bodenueberformung_planfall,  bodenueberformung_planfall - bodenueberformung_nullfall],
-                                "Oberflaechenabfluss": [oberflaechenabfluss_nullfall,oberflaechenabfluss_planfall,  oberflaechenabfluss_planfall - oberflaechenabfluss_nullfall],
-                                "Grundwasserneubildung": [grundwasserneubildung_nullfall,grundwasserneubildung_planfall,  grundwasserneubildung_planfall - grundwasserneubildung_nullfall],
-                                "Regenwasserversickerung": [regenwasserversickerung_nullfall,regenwasserversickerung_planfall,  regenwasserversickerung_planfall - regenwasserversickerung_nullfall],
-                                "Biotopausbildungsvermoegen": [biotopausbildungsvermoegen_nullfall,biotopausbildungsvermoegen_planfall, biotopausbildungsvermoegen_planfall - biotopausbildungsvermoegen_nullfall],
-                                "Staubbindevermoegen": [staubbindevermoegen_nullfall,staubbindevermoegen_planfall,  staubbindevermoegen_planfall - staubbindevermoegen_nullfall]
-                                }
+                         "Schadstoffrueckhaltung": [schadstoffrueckhaltung_nullfall,schadstoffrueckhaltung_planfall,  schadstoffrueckhaltung_planfall - schadstoffrueckhaltung_nullfall],
+                         "Waermespeicherung": [waermespeicherung_nullfall,waermespeicherung_planfall,  waermespeicherung_planfall - waermespeicherung_nullfall],
+                         "Durchlaessigkeit": [durchlaessigkeit_nullfall,durchlaessigkeit_planfall, durchlaessigkeit_planfall - durchlaessigkeit_nullfall],
+                         "Bodenueberformung": [bodenueberformung_nullfall,bodenueberformung_planfall,  bodenueberformung_planfall - bodenueberformung_nullfall],
+                         "Oberflaechenabfluss": [oberflaechenabfluss_nullfall,oberflaechenabfluss_planfall,  oberflaechenabfluss_planfall - oberflaechenabfluss_nullfall],
+                         "Grundwasserneubildung": [grundwasserneubildung_nullfall,grundwasserneubildung_planfall,  grundwasserneubildung_planfall - grundwasserneubildung_nullfall],
+                         "Regenwasserversickerung": [regenwasserversickerung_nullfall,regenwasserversickerung_planfall,  regenwasserversickerung_planfall - regenwasserversickerung_nullfall],
+                         "Biotopausbildungsvermoegen": [biotopausbildungsvermoegen_nullfall,biotopausbildungsvermoegen_planfall, biotopausbildungsvermoegen_planfall - biotopausbildungsvermoegen_nullfall],
+                         "Staubbindevermoegen": [staubbindevermoegen_nullfall,staubbindevermoegen_planfall,  staubbindevermoegen_planfall - staubbindevermoegen_nullfall]
+                         }
         self.parent_tbx.insert_rows_in_table("Leistungskennwerte", column_values)
