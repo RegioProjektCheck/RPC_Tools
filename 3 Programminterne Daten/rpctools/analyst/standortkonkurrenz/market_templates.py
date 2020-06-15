@@ -11,7 +11,7 @@ import pandas as pd
 import numpy as np
 import string
 
-from rpctools.utils.spatial_lib import google_geocode
+from rpctools.utils.spatial_lib import nominatim_geocode
 from rpctools.utils.config import Config
 
 from rpctools.analyst.standortkonkurrenz.osm_einlesen import Point, Supermarket
@@ -194,7 +194,6 @@ class MarketTemplate(object):
 
     def _df_to_markets(self, df):
         markets = []
-        api_key = config.google_api_key
         for i, (idx, row) in enumerate(df.iterrows()):
             address = ''
             name, kette, vkfl = row['Name'], row['Kette'], row[u'Vkfl_m²']
@@ -203,7 +202,7 @@ class MarketTemplate(object):
                     address += u' {}'.format(row[field])
                 arcpy.AddMessage(u'Geocoding {name} {address}...'.format(
                     name=name, address=address))
-                location, msg = google_geocode(address, api_key=api_key)
+                location, msg = nominatim_geocode(address)
                 if location is None:
                     arcpy.AddMessage(u'Fehler: {msg}'.format(msg=msg))
                     continue

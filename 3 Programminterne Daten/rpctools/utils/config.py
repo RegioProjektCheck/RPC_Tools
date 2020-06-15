@@ -37,7 +37,6 @@ class Config(object):
         'epsg': 31467,
         'transformation': "DHDN_To_WGS_1984_5x",
         'max_area_distance': 1000,
-        'google_api_key': ' AIzaSyDL32xzaNsQmB_fZGU9SF_FtnvJ4ZrwP8g',
         'project_folder': DEFAULT_PROJECT_FOLDER
     }
 
