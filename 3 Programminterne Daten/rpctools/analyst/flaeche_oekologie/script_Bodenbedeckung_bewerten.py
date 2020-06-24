@@ -105,49 +105,49 @@ class BodenbedeckungBewertung(Tool):
         cursor = arcpy.da.SearchCursor(path_bodenbedeckung, fields)
         for row in cursor:
             if row[1] == 0 and row[0] == 1:
-                 boden_anteile_alt[0] = row[2] / 10.0
+                 boden_anteile_alt[0] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 2:
-                 boden_anteile_alt[1] = row[2] / 10.0
+                 boden_anteile_alt[1] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 3:
-                 boden_anteile_alt[2] = row[2] / 10.0
+                 boden_anteile_alt[2] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 4:
-                 boden_anteile_alt[3] = row[2] / 10.0
+                 boden_anteile_alt[3] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 5:
-                 boden_anteile_alt[4] = row[2] / 10.0
+                 boden_anteile_alt[4] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 6:
-                 boden_anteile_alt[5] = row[2] / 10.0
+                 boden_anteile_alt[5] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 7:
-                 boden_anteile_alt[6] = row[2] / 10.0
+                 boden_anteile_alt[6] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 8:
-                 boden_anteile_alt[7] = row[2] / 10.0
+                 boden_anteile_alt[7] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 9:
-                 boden_anteile_alt[8] = row[2] / 10.0
+                 boden_anteile_alt[8] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 10:
-                 boden_anteile_alt[9] = row[2] / 10.0
+                 boden_anteile_alt[9] = row[2] / 1.0
             elif row[1] == 0 and row[0] == 11:
-                 boden_anteile_alt[10] = row[2] / 10.0
+                 boden_anteile_alt[10] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 1:
-                 boden_anteile_neu[0] = row[2] / 10.0
+                 boden_anteile_neu[0] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 2:
-                 boden_anteile_neu[1] = row[2] / 10.0
+                 boden_anteile_neu[1] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 3:
-                 boden_anteile_neu[2] = row[2] / 10.0
+                 boden_anteile_neu[2] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 4:
-                 boden_anteile_neu[3] = row[2] / 10.0
+                 boden_anteile_neu[3] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 5:
-                 boden_anteile_neu[4] = row[2] / 10.0
+                 boden_anteile_neu[4] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 6:
-                 boden_anteile_neu[5] = row[2] / 10.0
+                 boden_anteile_neu[5] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 7:
-                 boden_anteile_neu[6] = row[2] / 10.0
+                 boden_anteile_neu[6] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 8:
-                 boden_anteile_neu[7] = row[2] / 10.0
+                 boden_anteile_neu[7] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 9:
-                 boden_anteile_neu[8] = row[2] / 10.0
+                 boden_anteile_neu[8] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 10:
-                 boden_anteile_neu[9] = row[2] / 10.0
+                 boden_anteile_neu[9] = row[2] / 1.0
             elif row[1] == 1 and row[0] == 11:
-                 boden_anteile_neu[10] = row[2] / 10.0
+                 boden_anteile_neu[10] = row[2] / 1.0
 
         plangebiet_ha = 0
         path_teilflaechen = self.folders.get_table('Teilflaechen_Plangebiet', "FGDB_Definition_Projekt.gdb", projekt)
@@ -169,7 +169,7 @@ class BodenbedeckungBewertung(Tool):
         #Boden
         schadstoffrueckhaltung_multiplikator = [0,0,0.2,0.8,0.4,0.8,0.8,0,0.5,0.3,0.8]
         durchlaessigkeit_multiplikator = [0,1,0.2,1,0.6,1,1,0.1,1,0.4,0.8]
-        bodenueberformung_multiplikator = [0,1,0,0.8,0,0,1,0.8,0.8,0,0.8]
+        bodenueberformung_multiplikator = [0,1,0,0.8,0,0.8,1,0,0.8,0,0.8]
         #Wasser
         oberflaechenabfluss_multiplikator = [0,0,0.4,1,0.6,1,1,0.1,1,0.7,0.8]
         grundwasserneubildung_multiplikator = [0,1,0.3,0.4,0.8,0.5,0.5,0,1,0.5,0.5]
@@ -245,62 +245,64 @@ class BodenbedeckungBewertung(Tool):
             faktor_biotopausbildungsvermoegen_nullfall.append(boden_anteile_alt[x] * biotopausbildungsvermoegen_multiplikator[x])
             faktor_biotopausbildungsvermoegen_planfall.append(boden_anteile_neu[x] * biotopausbildungsvermoegen_multiplikator[x])
 
-        arcpy.AddMessage("Faktoren Nullfall: " + str(faktor_biotopausbildungsvermoegen_nullfall))
-        arcpy.AddMessage("Faktoren Planfall: " + str(faktor_biotopausbildungsvermoegen_planfall))
+        #arcpy.AddMessage("Faktoren Nullfall: " + str(faktor_biotopausbildungsvermoegen_nullfall))
+        #arcpy.AddMessage("Faktoren Planfall: " + str(faktor_biotopausbildungsvermoegen_planfall))
         table_kennwerte = self.folders.get_table("Leistungskennwerte")
         cursor = arcpy.da.UpdateCursor(table_kennwerte, ["*"])
         for row in cursor:
             cursor.deleteRow()
 
         def get_kennwert(quotient):
-            return round(quotient * 10, 1)
+            return round(quotient/10, 1)
 
-        quotient_waermespeicherung_nullfall = sum(faktor_waermespeicherung_nullfall) / 11.0
+        quotient_waermespeicherung_nullfall = sum(faktor_waermespeicherung_nullfall)
         waermespeicherung_nullfall = get_kennwert(quotient_waermespeicherung_nullfall)
-        quotient_waermespeicherung_planfall = sum(faktor_waermespeicherung_planfall) / 11.0
+        quotient_waermespeicherung_planfall = sum(faktor_waermespeicherung_planfall)
         waermespeicherung_planfall = get_kennwert(quotient_waermespeicherung_planfall)
 
-        quotient_staubbindevermoegen_nullfall = sum(faktor_staubbindevermoegen_nullfall) / 11.0
+        quotient_staubbindevermoegen_nullfall = sum(faktor_staubbindevermoegen_nullfall)
         staubbindevermoegen_nullfall = get_kennwert(quotient_staubbindevermoegen_nullfall)
-        quotient_staubbindevermoegen_planfall = sum(faktor_staubbindevermoegen_planfall) / 11.0
+        quotient_staubbindevermoegen_planfall = sum(faktor_staubbindevermoegen_planfall)
         staubbindevermoegen_planfall = get_kennwert(quotient_staubbindevermoegen_planfall)
 
-        quotient_schadstoffrueckhaltung_nullfall = sum(faktor_schadstoffrueckhaltung_nullfall) / 11.0
+        quotient_schadstoffrueckhaltung_nullfall = sum(faktor_schadstoffrueckhaltung_nullfall)
         schadstoffrueckhaltung_nullfall = get_kennwert(quotient_schadstoffrueckhaltung_nullfall)
-        quotient_schadstoffrueckhaltung_planfall = sum(faktor_schadstoffrueckhaltung_planfall) / 11.0
+        quotient_schadstoffrueckhaltung_planfall = sum(faktor_schadstoffrueckhaltung_planfall)
         schadstoffrueckhaltung_planfall = get_kennwert(quotient_schadstoffrueckhaltung_planfall)
 
-        quotient_durchlaessigkeit_nullfall = sum(faktor_durchlaessigkeit_nullfall) / 11.0
+        quotient_durchlaessigkeit_nullfall = sum(faktor_durchlaessigkeit_nullfall)
         durchlaessigkeit_nullfall  = get_kennwert(quotient_durchlaessigkeit_nullfall)
-        quotient_durchlaessigkeit_planfall = sum(faktor_durchlaessigkeit_planfall) / 11.0
+        quotient_durchlaessigkeit_planfall = sum(faktor_durchlaessigkeit_planfall)
         durchlaessigkeit_planfall = get_kennwert(quotient_durchlaessigkeit_planfall)
 
-        quotient_bodenueberformung_nullfall = sum(faktor_bodenueberformung_nullfall) / 11.0
+        quotient_bodenueberformung_nullfall = sum(faktor_bodenueberformung_nullfall)
         bodenueberformung_nullfall = get_kennwert(quotient_bodenueberformung_nullfall)
-        quotient_bodenueberformung_planfall = sum(faktor_bodenueberformung_planfall) / 11.0
+        quotient_bodenueberformung_planfall = sum(faktor_bodenueberformung_planfall)
         bodenueberformung_planfall = get_kennwert(quotient_bodenueberformung_planfall)
 
-        quotient_oberflaechenabfluss_nullfall = sum(faktor_oberflaechenabfluss_nullfall) / 11.0
+        quotient_oberflaechenabfluss_nullfall = sum(faktor_oberflaechenabfluss_nullfall)
         oberflaechenabfluss_nullfall = get_kennwert(quotient_oberflaechenabfluss_nullfall)
-        quotient_oberflaechenabfluss_planfall = sum(faktor_oberflaechenabfluss_planfall) / 11.0
+        quotient_oberflaechenabfluss_planfall = sum(faktor_oberflaechenabfluss_planfall)
         oberflaechenabfluss_planfall = get_kennwert(quotient_oberflaechenabfluss_planfall)
 
-        quotient_grundwasserneubildung_nullfall = sum(faktor_grundwasserneubildung_nullfall) / 11.0
+        quotient_grundwasserneubildung_nullfall = sum(faktor_grundwasserneubildung_nullfall)
         grundwasserneubildung_nullfall = get_kennwert(quotient_grundwasserneubildung_nullfall)
-        quotient_grundwasserneubildung_planfall = sum(faktor_grundwasserneubildung_planfall) / 11.0
+        quotient_grundwasserneubildung_planfall = sum(faktor_grundwasserneubildung_planfall)
         grundwasserneubildung_planfall = get_kennwert(quotient_grundwasserneubildung_planfall)
 
-        quotient_regenwasserversickerung_nullfall = sum(faktor_regenwasserversickerung_nullfall) / 11.0
+        quotient_regenwasserversickerung_nullfall = sum(faktor_regenwasserversickerung_nullfall)
         regenwasserversickerung_nullfall = get_kennwert(quotient_regenwasserversickerung_nullfall)
-        quotient_regenwasserversickerung_planfall = sum(faktor_regenwasserversickerung_planfall) / 11.0
+        quotient_regenwasserversickerung_planfall = sum(faktor_regenwasserversickerung_planfall)
         regenwasserversickerung_planfall = get_kennwert(quotient_regenwasserversickerung_planfall)
 
-        quotient_biotopausbildungsvermoegen_nullfall = sum(faktor_biotopausbildungsvermoegen_nullfall) / 11.0
-        arcpy.AddMessage("Quotient Nullfall: " + str(quotient_biotopausbildungsvermoegen_nullfall))
+        quotient_biotopausbildungsvermoegen_nullfall = sum(faktor_biotopausbildungsvermoegen_nullfall)
+        #arcpy.AddMessage("Quotient Nullfall: " + str(quotient_biotopausbildungsvermoegen_nullfall))
         biotopausbildungsvermoegen_nullfall = get_kennwert(quotient_biotopausbildungsvermoegen_nullfall)
-        quotient_biotopausbildungsvermoegen_planfall = sum(faktor_biotopausbildungsvermoegen_planfall) / 11.0
-        arcpy.AddMessage("Quotient Planfall: " + str(quotient_biotopausbildungsvermoegen_planfall))
+        quotient_biotopausbildungsvermoegen_planfall = sum(faktor_biotopausbildungsvermoegen_planfall)
+        #arcpy.AddMessage("Quotient Planfall: " + str(quotient_biotopausbildungsvermoegen_planfall))
         biotopausbildungsvermoegen_planfall = get_kennwert(quotient_biotopausbildungsvermoegen_planfall)
+        #arcpy.AddMessage("Kennwert Nullfall: " + str(biotopausbildungsvermoegen_nullfall))
+        #arcpy.AddMessage("Kennwert Planfall: " + str(biotopausbildungsvermoegen_planfall))
 
         column_values = {"Kategorie": [u"Nullfall", u"Planfall", u"Veränderung"],
                          "Schadstoffrueckhaltung": [schadstoffrueckhaltung_nullfall,schadstoffrueckhaltung_planfall,  schadstoffrueckhaltung_planfall - schadstoffrueckhaltung_nullfall],
