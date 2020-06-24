@@ -82,24 +82,34 @@ class ProjektwirkungMarkets(Tool):
                                   name=layer_name,
                                   template_folder=folder,
                                   zoom=False)
-        self.output.hide_layer(u'Ausgewählte Gemeinden im Betrachtungsraum')
-        self.output.hide_layer(u'Nicht ausgewählte Gemeinden')
+        self.output.hide_layer(u'Ausgewählte Gemeinden/Verw.gemeinschaften '
+                               'im Betrachtungsraum')
+        self.output.hide_layer(u'Nicht ausgewählte Gemeinden/'
+                               'Verw.gemeinschaften')
         self.output.add_layer(group_layer, layer_vb, fc_zentren, visible=False,
-                              template_folder=folder, zoom=False)
+                              template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_gem, fc_zentren,
-                              template_folder=folder, zoom=False)
+                              template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_zen_n, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_zen_p, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_zen_e, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_vkfl_n, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_vkfl_p, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
         self.output.add_layer(group_layer, layer_vkfl_e, fc_zentren,
-                              visible=False, template_folder=folder, zoom=False)
+                              visible=False, template_folder=folder, zoom=False,
+                              subgroup='Projektwirkung')
 
     def run(self):
         folders = Folders(self.par)

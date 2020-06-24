@@ -21,7 +21,8 @@ class EditCenters(Tool):
         fc = 'Zentren'
         layer = 'Zentren'
         self.output.add_layer(group_layer, layer, fc, zoom=False,
-                              template_folder=folder)
+                              template_folder=folder,
+                              subgroup='Betrachtungsraum')
 
     def run(self):
         centers_df = self.parent_tbx.centers_df

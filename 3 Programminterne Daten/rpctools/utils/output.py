@@ -404,6 +404,7 @@ class Output(object):
         # add OpenStreetmap
         layer = "OpenStreetMap"
         self.add_layer("hintergrundkarten", layer,
+                       name='OpenStreetMap © OpenStreetMap-Mitwirkende',
                        zoom=False, in_project=False)
 
     def add_project_contour(self):
@@ -451,8 +452,8 @@ class Output(object):
         dataframe = dataframe or current_mxd.activeDataFrame
 
         if not arcpy.mapping.ListLayers(project_layer, group, dataframe):
-            group_layer_template = self.folders.get_layer(layername=group,
-                                                          folder='toc', enhance=True)
+            group_layer_template = self.folders.get_layer(
+                layername=group, folder='toc', enhance=True)
             addLayer = arcpy.mapping.Layer(group_layer_template)
             arcpy.mapping.AddLayerToGroup(
                 dataframe, project_layer, addLayer, "BOTTOM")
@@ -485,7 +486,7 @@ class Output(object):
                 dataframe, target_grouplayer, addLayer, "BOTTOM")
             del(addLayer)
             del(target_grouplayer)
-        del(current_dataframe)
+        del(dataframe)
         del(current_mxd)
 
     def add_layer(self,

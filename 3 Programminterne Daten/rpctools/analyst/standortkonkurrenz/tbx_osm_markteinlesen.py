@@ -48,14 +48,16 @@ class MarktEinlesen(Tool):
         fc = 'Maerkte'
         folder = 'Standortkonkurrenz'
         layer_nullfall = 'Märkte im Bestand'
-        layer_changed = 'veränderte Märkte im Bestand'
-        layer_planfall = 'geplante Märkte'
-
+        layer_changed = 'Veränderte Märkte im Bestand'
+        layer_planfall = 'Geplante Märkte'
         self.output.add_layer(group_layer, layer_nullfall, fc,
+                              subgroup='Märkte im Nullfall',
                               template_folder=folder, zoom=False)
         self.output.add_layer(group_layer, layer_changed, fc,
+                              subgroup='Märkte im Planfall',
                               template_folder=folder, zoom=False)
         self.output.add_layer(group_layer, layer_planfall, fc,
+                              subgroup='Märkte im Planfall',
                               template_folder=folder, zoom=False)
 
         self.output.hide_layer('projektdefinition')

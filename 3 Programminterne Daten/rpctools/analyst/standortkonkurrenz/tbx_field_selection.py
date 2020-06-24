@@ -2,6 +2,7 @@
 import arcpy
 from rpctools.utils.params import Tbx, Tool
 
+
 class TbxFieldSelection(Tbx):
 
     @property
@@ -28,7 +29,6 @@ class TbxFieldSelection(Tbx):
         return params
 
 
-
 class FieldSelectionTool(Tool):
     _workspace = 'FGDB_Standortkonkurrenz_Supermaerkte.gdb'
     _table = "Zentren"
@@ -37,13 +37,16 @@ class FieldSelectionTool(Tool):
                              template_folder='Standortkonkurrenz',
                              featureclass=self._table,
                              workspace=self._workspace,
-                             name='Ausgewählte Gemeinden im '+\
-                             'Betrachtungsraum')
+                             name='Ausgewählte Gemeinden/Verw.Gemeinschaften '
+                             'im Betrachtungsraum',
+                             subgroup='Betrachtungsraum')
         self.output.add_layer('standortkonkurrenz', 'Zentren_background',
                              template_folder='Standortkonkurrenz',
                              featureclass=self._table,
                              workspace=self._workspace,
-                             name='Nicht ausgewählte Gemeinden',
+                             name='Nicht ausgewählte Gemeinden/'
+                             'Verw.Gemeinschaften',
+                             subgroup='Betrachtungsraum',
                              zoom=True)
 
     def run(self):
