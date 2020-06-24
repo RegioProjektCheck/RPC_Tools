@@ -8,11 +8,21 @@ except:
 
 import os, sys
 import subprocess
+import threading
 from collections import OrderedDict
 import _winreg
 from argparse import ArgumentParser
+import functools
 
 min_requirement = 10.3
+
+def threaded(function):
+    @functools.wraps(function)
+    def _threaded(*args, **kwargs):
+        thread = threading.Thread(target=function, args=args, kwargs=kwargs)
+        thread.start()
+        thread.join()
+    return _threaded
 
 def get_python_path():
     try:
@@ -131,7 +141,7 @@ def install_packages(python_path, install_dir=''):
     except:
         install_dir = os.getcwd()
         base_path = os.path.join(install_dir,
-                                     '3 Programminterne Daten', 'installer')
+                                 '3 Programminterne Daten', 'installer')
 
     wheel_path = os.path.join(base_path, 'wheels')
     log('Install or upgrade pip')
@@ -176,6 +186,10 @@ def install_packages(python_path, install_dir=''):
                     upgrade=True)
 
     log('Installation abgeschlossen.')
+    log('Öffne Haftungsausschluss... Bitte vor Benutzung lesen.')
+    help_path = os.path.join(base_path, '..', '..', '0 Anleitung')
+    threaded(os.startfile)(
+        os.path.join(help_path, 'ProjektCheck_Haftungsausschluss.pdf'))
 
 if __name__ == '__main__':
     #parser = ArgumentParser()
