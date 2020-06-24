@@ -58,6 +58,9 @@
                 <Button caption="Nutzungen auf Teilfl&#228;chen definieren" category="ProjektCheck" class="NutzungenDefinieren" id="rpc_tools.nutzungen_definieren" image="Images\013500-filter_1.png" message="" tip="Für jede Teilfläche Ihres Projekts festlegen, ob die zukünftige Nutzung Wohnen, Gewerbe oder Einzelhandel sein soll.">
                     <Help heading="" />
                 </Button>
+                <Tool caption="Anbindung der Teilfl&#228;chen an das Stra&#223;ennetz" category="ProjektCheck" class="Anbindungspunkt" id="rpc_tools.anbindungspunkt" image="Images\CadastralFeatureSelect16.png" message="" tip="Für die einzelnen Teilflächen festlegen, an welcher Stelle die Verkehre aus bzw. in das Plangebiet in das Bestandsnetz einmünden">
+                    <Help heading="" />
+                </Tool>
                 <Button caption="Wohnen" category="ProjektCheck" class="Wohnen" id="rpc_tools.wohnen" image="Images\011000-home_1.png" message="" tip="Bezugszeitraum, Wohneinheiten, Gebäudetypen und Haushaltsgrößen für Wohnbauflächen festlegen.">
                     <Help heading="" />
                 </Button>
@@ -202,9 +205,6 @@
                 <Button caption="Gewichtung der Herkunfts-/Zielpunkte" category="ProjektCheck" class="WeightedRouting" id="rpc_tools.weighted_routing" image="Images\Route16.png" message="" tip="Die Herkunfts-/Zielpunkte untereinander so wichten, dass es ihrer realen Verkehrsbedeutung entspricht">
                     <Help heading="" />
                 </Button>
-                <Tool caption="Anbindung der Teilfl&#228;chen an das Stra&#223;ennetz" category="ProjektCheck" class="Anbindungspunkt" id="rpc_tools.anbindungspunkt" image="Images\CadastralFeatureSelect16.png" message="" tip="Für die einzelnen Teilflächen festlegen, an welcher Stelle die Verkehre aus bzw. in das Plangebiet in das Bestandsnetz einmünden">
-                    <Help heading="" />
-                </Tool>
 
                 <!-- STANDORTKONKURRENZ  -->
 
@@ -474,6 +474,7 @@
                         <Button refID="rpc_tools.hilfe_nutzungen" />
                         <Button refID="rpc_tools.nutzungen_definieren" separator="true"/>
                         <Menu refID="rpc_tools.nutzungen_menu_detailangaben_nutzungen" />
+                        <Tool refID="rpc_tools.anbindungspunkt" separator="true"/>
                     </Items>
                 </Menu>
                 <Menu caption="Bewohner und Arbeitspl&#228;tze" category="ProjektCheck" id="rpc_tools.menu_bewohner_und_arbeitsplaetze" isRootMenu="false" isShortcutMenu="true" separator="true">
@@ -515,7 +516,6 @@
                 <Menu caption="Verkehr im Umfeld" category="ProjektCheck" id="rpc_tools.menu_verkehr_im_umfeld" isRootMenu="false" isShortcutMenu="true" separator="true">
                     <Items>
                         <Button refID="rpc_tools.hilfe_verkehr" />
-                        <Tool refID="rpc_tools.anbindungspunkt" separator="true"/>
                         <Button refID="rpc_tools.initial_routing"/>
                         <Menu refID="rpc_tools.menu_verkehr_annahmen" />
                     </Items>
