@@ -67,7 +67,7 @@ def get_python_path():
     except Exception as e:
         log(e)
 
-def install_packages(python_path, install_dir=''):
+def install_packages(python_path, base_path, install_dir=''):
 
     log("\n"+ "Verwendeter Python-Pfad: " + python_path + "\n")
     log(sys.version)
@@ -135,14 +135,6 @@ def install_packages(python_path, install_dir=''):
 
     missing = OrderedDict()
 
-    try:
-        base_path = os.path.dirname(__file__)
-    # executed from nsis
-    except:
-        install_dir = os.getcwd()
-        base_path = os.path.join(install_dir,
-                                 '3 Programminterne Daten', 'installer')
-
     wheel_path = os.path.join(base_path, 'wheels')
     log('Install or upgrade pip')
     process = subprocess.Popen([os.path.join(python_path, 'python'),
@@ -186,17 +178,25 @@ def install_packages(python_path, install_dir=''):
                     upgrade=True)
 
     log('Installation abgeschlossen.')
-    log('Öffne Haftungsausschluss... Bitte vor Benutzung lesen.')
-    help_path = os.path.join(base_path, '..', '..', '0 Anleitung')
-    threaded(os.startfile)(
-        os.path.join(help_path, 'ProjektCheck_Haftungsausschluss.pdf'))
 
 if __name__ == '__main__':
     #parser = ArgumentParser()
     #parser.add_argument('-i', dest='installdir')
     #install_dir = parser.parse_args().installdir
+    try:
+        base_path = os.path.dirname(__file__)
+    # executed from nsis
+    except:
+        install_dir = os.getcwd()
+        base_path = os.path.join(install_dir,
+                                 '3 Programminterne Daten', 'installer')
     python_paths = get_python_path()
     if python_paths:
         for python_path in python_paths:
-            install_packages(python_path)  #, install_dir=install_dir)
+            install_packages(python_path, base_path)
+            #, install_dir=install_dir)
     #install_packages('C:\\Python27-ArcGIS\\ArcGISx6410.4')
+    log('Öffne Haftungsausschluss... Bitte vor Benutzung lesen.')
+    help_path = os.path.join(base_path, '..', '..', '0 Anleitung')
+    threaded(os.startfile)(
+        os.path.join(help_path, 'ProjektCheck_Haftungsausschluss.pdf'))
