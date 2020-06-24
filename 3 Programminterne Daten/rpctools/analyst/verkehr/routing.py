@@ -6,6 +6,7 @@ import os
 from rpctools.utils.params import Tool
 from rpctools.analyst.verkehr.otp_router import Point, OTPRouter
 import pandas as pd
+import numpy as np
 
 
 class Routing(Tool):
@@ -35,6 +36,7 @@ class Routing(Tool):
         toolbox = self.parent_tbx
         # tbx settings
         inner_circle = toolbox.par.inner.value
+        mid_circle = inner_circle + 500
         outer_circle = inner_circle + self._outer_circle
         #arcpy.Delete_management(tmp_table)
         # get data from Wege_je_nutzung table
@@ -62,8 +64,12 @@ class Routing(Tool):
                                    srid_proj=o.p2, srid_geogr=o.p1)    # centroid
 
             # calculate segments around centroid
-            destinations = o.create_circle(source, dist=outer_circle,
-                                           n_segments=self._n_segments)
+            inner_dest = o.create_circle(source, dist=mid_circle,
+                                         n_segments=self._n_segments)
+            outer_dest = o.create_circle(source, dist=outer_circle,
+                                         n_segments=self._n_segments)
+            destinations = np.concatenate([inner_dest, outer_dest])
+
             # calculate the routes to the segments
             for (lon, lat) in destinations:
                 destination = Point(lat, lon)
@@ -73,15 +79,16 @@ class Routing(Tool):
 
         o.nodes.transform()
         o.nodes_to_graph(meters=inner_circle)
+        o.remove_redundant_routes()
         arcpy.AddMessage("berechne Zielknoten...")
         o.transfer_nodes.calc_initial_weight()
         arcpy.AddMessage("berechne Gewichte...")
         o.calc_vertex_weights()
         o.create_polyline_features()
         o.create_node_features()
-        print o.transfer_nodes.keys()
         o.create_transfer_node_features()
         o.set_layer_extent()
+
         self._extent = o.extent
         o.dump(self.folders.get_otp_pickle_filename(check=False))
 
