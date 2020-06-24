@@ -374,7 +374,7 @@ class TbxBodenBewertung(Tbx):
                     params['rasen_alt'].value = row[2]
                 elif row[1] == 0 and row[0] == 12:
                     params['undefiniert_alt'].value = row[2]
-                    
+
                 elif row[1] == 1 and row[0] == 1:
                     params['ueberbauteflaechen_neu'].value = row[2]
                 elif row[1] == 1 and row[0] == 2:
@@ -594,6 +594,7 @@ class TbxBodenEntfernen(Tbx):
 
         return params
 
+
 class TbxBodenAnzeigen(Tbx):
     """Toolbox Boden anzeigen"""
 
@@ -618,3 +619,12 @@ class TbxBodenAnzeigen(Tbx):
         param.datatype = u'GPString'
 
         return params
+
+
+if __name__ == '__main__':
+    t = TbxBodenBewertung()
+    #params = t.getParameterInfo()
+    t.set_active_project()
+    t.folders._projectname = t.config.active_project
+    t.show_outputs()
+    t.execute()

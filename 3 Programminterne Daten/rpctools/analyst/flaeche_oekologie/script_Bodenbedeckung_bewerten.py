@@ -4,40 +4,43 @@ import sys
 
 import arcpy
 from rpctools.utils.params import Tool
-from rpctools.diagrams.diagram_oekologie import Dia_Waerme
-from rpctools.diagrams.diagram_oekologie import Dia_Schadstoff
-from rpctools.diagrams.diagram_oekologie import Dia_Durchlaessigkeit
-from rpctools.diagrams.diagram_oekologie import Dia_Ueberformung
-from rpctools.diagrams.diagram_oekologie import Dia_Abfluss
-from rpctools.diagrams.diagram_oekologie import Dia_Grundwasser
-from rpctools.diagrams.diagram_oekologie import Dia_Regenwasser
-from rpctools.diagrams.diagram_oekologie import Dia_Biotop
-from rpctools.diagrams.diagram_oekologie import Dia_Staub
+from rpctools.diagrams.diagram_oekologie import (Leistungskennwerte,
+                                                 LeistungskennwerteDelta)
+
 
 class BodenbedeckungBewertung(Tool):
     """BodenbedeckungBewertung"""
-
+    MAX_RATING = 10
     _param_projectname = 'name'
     _workspace = 'FGDB_Flaeche_und_Oekologie.gdb'
 
     def add_outputs(self):
-        diagram = Dia_Waerme(projectname=self.par.name.value)
+        df = self.parent_tbx.table_to_dataframe('Leistungskennwerte')
+        del df['OBJECTID']
+        df_nullfall = df[df['Kategorie']=='Nullfall']
+        df_planfall = df[df['Kategorie']=='Planfall']
+        df_delta = df[df['Kategorie']==u'Veränderung']
+        del df_nullfall['Kategorie']
+        del df_planfall['Kategorie']
+        del df_delta['Kategorie']
+
+        columns = df_nullfall.columns
+        columns = [c.replace('ae', u'ä').replace('ue', u'ü').replace('oe', u'ö')
+                   .capitalize() for c in columns]
+
+        diagram = Leistungskennwerte(
+            nullfall=df_nullfall.values[0], planfall=df_planfall.values[0],
+            columns=columns,
+            title='Leistungskennwerte im Nullfall und Planfall',
+            max_rating=self.MAX_RATING
+        )
         self.output.add_diagram(diagram)
-        diagram = Dia_Schadstoff(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Durchlaessigkeit(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Ueberformung(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Abfluss(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Grundwasser(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Regenwasser(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Biotop(projectname=self.par.name.value)
-        self.output.add_diagram(diagram)
-        diagram = Dia_Staub(projectname=self.par.name.value)
+
+        diagram = LeistungskennwerteDelta(
+            delta=df_delta.values[0], columns=columns,
+            title=u'Beeinträchtigung durch Planungsvorhaben (= Veränderung der '
+            u'\nLeistungskennwerte im Planfall gegenüber dem Nullfall)',
+            max_rating=self.MAX_RATING)
         self.output.add_diagram(diagram)
 
     def run(self):
