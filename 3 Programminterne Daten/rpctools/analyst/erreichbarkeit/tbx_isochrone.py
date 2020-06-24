@@ -1,16 +1,20 @@
 # -*- coding: utf-8 -*-
 import arcpy
+import requests
 
 from rpctools.utils.params import Tool, Tbx
 from rpctools.utils.spatial_lib import get_project_centroid, Point
 from rpctools.utils.encoding import encode
 from rpctools.analyst.erreichbarkeit.routing_query import RoutingQuery
+from rpctools.definitions.projektverwaltung.tbx_teilflaechen_verwalten \
+     import TbxFlaechendefinition
 
 
 class Isochrone(Tool):
     _param_projectname = 'projectname'
     _workspace = 'FGDB_Erreichbarkeit.gdb'
     cutoff = None
+    area = None
 
     modes = {
         'CAR': ('Auto', 5),
@@ -26,7 +30,6 @@ class Isochrone(Tool):
         fc = u'Isochrone'
         for layer in layers:
             name = layer
-            # ToDo: get cutoff time from db instead of from run()
             if self.cutoff:
                 name += ' ({} Minuten)'.format(self.cutoff)
             self.output.add_layer(group_layer, layer, fc,
@@ -38,26 +41,38 @@ class Isochrone(Tool):
         table = 'Isochrone'
         self.cutoff = self.par.cutoff.value
         cutoff_sec = self.cutoff * 60
-        column_values = {'modus': [], 'SHAPE@': [],
-                         'cutoff': [self.cutoff] * len(self.modes)}
-        x, y = get_project_centroid(self.par.projectname.value)
+        self.area, i = self.parent_tbx.get_selected_area()
+        area_id = self.area['id_teilflaeche']
+        rows = self.parent_tbx.query_table(
+            'Anbindungspunkte', workspace='FGDB_Verkehr.gdb',
+            where='id_teilflaeche={}'.format(area_id), columns='SHAPE')
+
+        x, y = rows[0][0]
         centroid = Point(x, y, epsg=self.parent_tbx.config.epsg)
         query = RoutingQuery()
         target_epsg = self.parent_tbx.config.epsg
-        for mode, (name, walk_speed) in self.modes.iteritems():
-            arcpy.AddMessage(u'Ermittle die Isochronen für den Modus "{}"'
-                             .format(name))
-            iso_poly = query.get_isochrone(centroid, target_epsg,
-                                           mode, cutoff_sec, walk_speed)
-            column_values['modus'].append(name)
-            column_values['SHAPE@'].append(iso_poly)
-        arcpy.AddMessage('Schreibe die Isochronen in die Datenbank...')
-        self.parent_tbx.delete_rows_in_table(table)
-        self.parent_tbx.insert_rows_in_table(table, column_values)
+        column_values = {'modus': [], 'SHAPE@': [],
+                         'cutoff': [self.cutoff] * len(self.modes)}
+        try:
+            for mode, (name, walk_speed) in self.modes.iteritems():
+                arcpy.AddMessage(u'Ermittle die Isochronen für den Modus "{}"'
+                                 .format(name))
+                iso_poly = query.get_isochrone(centroid, target_epsg,
+                                               mode, cutoff_sec, walk_speed)
+                column_values['modus'].append(name)
+                column_values['SHAPE@'].append(iso_poly)
+            arcpy.AddMessage('Schreibe die Isochronen in die Datenbank...')
+            self.parent_tbx.delete_rows_in_table(table)
+            self.parent_tbx.insert_rows_in_table(table, column_values)
+        except requests.HTTPError:
+            arcpy.AddError('Fehler bei der Anfrage an den Routingserver. '
+                           'Entweder ist der Server nicht erreichbar oder der '
+                           'Anbindungspunkt kann nicht an das Straßennetz '
+                           'angebunden werden.')
 
 
 
-class TbxIsochrone(Tbx):
+class TbxIsochrone(TbxFlaechendefinition):
     @property
     def label(self):
         return encode(u'Isochronen zur Umfelderreichbarkeit erzeugen')
@@ -79,6 +94,11 @@ class TbxIsochrone(Tbx):
         param.datatype = u'GPString'
         param.filter.list = []
 
+        params = super(TbxIsochrone, self)._getParameterInfo()
+        params.area.displayName = encode(
+            u'Teilfläche, von deren Anbindungspunkt aus die Erreichbarkeit '
+            'ermittelt wird')
+
         param = self.add_parameter('cutoff')
         param.name = encode(u'Erreichbarkeit')
         param.displayName = encode(u'Erreichbarkeit in x Minuten')
@@ -90,6 +110,10 @@ class TbxIsochrone(Tbx):
         param.value = 10
 
         return params
+
+    def set_selected_area(self):
+        pass
+
 
 if __name__ == '__main__':
     t = TbxIsochrone()
