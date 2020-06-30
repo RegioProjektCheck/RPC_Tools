@@ -108,7 +108,7 @@ class LeistungskennwerteDelta(MatplotDiagram):
         min_val = -max_rating or min(-3, min(data))
         max_val = max_rating or max(3, max(data))
 
-        ax.set_xlim(left=min_val-1, right=max_val+1)
+        ax.set_xlim(left=min_val-2, right=max_val+1)
         ax.set_xticks(range(min_val, max_val+1, 1))
         ax.set_yticklabels(labels)
         #ax.get_xaxis().set_major_formatter(
