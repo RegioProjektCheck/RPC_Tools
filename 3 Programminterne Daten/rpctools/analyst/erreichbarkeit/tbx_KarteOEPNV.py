@@ -12,6 +12,7 @@ import os
 import sys
 from rpctools.utils.params import Tool
 
+
 class KarteOEPNV(Tool):
     _param_projectname = 'projectname'
     _workspace = 'FGDB_Erreichbarkeit.gdb'
@@ -29,9 +30,9 @@ class KarteOEPNV(Tool):
         y = coordinates[1]
         arcpy.AddMessage(x)
         arcpy.AddMessage(y)
-        inProj = Proj(init='epsg:31466')
+        inProj = Proj(init='epsg:{}'.format(self.parent_tbx.config.epsg))
         outProj = Proj(init='epsg:4326')
-        x,y = transform(inProj,outProj,x,y)
+        x, y = transform(inProj, outProj, x, y)
         arcpy.AddMessage(x)
         arcpy.AddMessage(y)
         url = "https://www.xn--pnvkarte-m4a.de/#{};{};15".format(x, y)
@@ -74,4 +75,4 @@ class TbxKarteOEPNV(Tbx):
     def _updateMessages(self, params):
 
         par = self.par
-      
+
