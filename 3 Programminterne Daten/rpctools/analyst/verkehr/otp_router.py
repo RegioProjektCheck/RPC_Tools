@@ -26,6 +26,8 @@ class Route(object):
         self.route_id = route_id
         self.source_id = source_id
         self.node_ids = np.array([], dtype='i4')
+        self.weight = 0
+
     @property
     def source_node(self):
         if not len(self.node_ids):
