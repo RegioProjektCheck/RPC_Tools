@@ -81,7 +81,8 @@ class ProjektwirkungMarkets(Tool):
                                   fn,
                                   name=layer_name,
                                   template_folder=folder,
-                                  zoom=False)
+                                  zoom=False,
+                                  subgroup='Projektwirkung')
         self.output.hide_layer(u'Ausgewählte Gemeinden/Verw.gemeinschaften '
                                'im Betrachtungsraum')
         self.output.hide_layer(u'Nicht ausgewählte Gemeinden/'
