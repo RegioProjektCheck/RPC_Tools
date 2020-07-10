@@ -2,6 +2,7 @@
 import os
 import sys
 import arcpy
+import numpy as np
 
 from rpctools.utils.params import Tbx
 from rpctools.utils.encoding import encode
@@ -50,6 +51,25 @@ class TbxRouting(Tbx):
 
         return params
 
+    def validate_inputs(self):
+        source_table = 'Anbindungspunkte'
+        source_ws = 'FGDB_Verkehr.gdb'
+        table = self.query_table(source_table, columns=['Shape'],
+                                 workspace=source_ws)
+        max_dist = self.config.max_area_distance
+        xy = [r[0] for r in table]
+        distances = []
+        for i in range(len(xy)):
+            for j in range(i):
+                dist = np.linalg.norm(np.subtract(xy[i], xy[j]))
+                distances.append(dist)
+        if max(distances) > max_dist:
+            msg = (u'Der Abstand zwischen den Anbindungspunkten ist zu groß. '
+                   u'Er darf für die Schätzung der Verkehrsbelastung jeweils '
+                   u'nicht größer als {} m sein!'
+                   .format(max_dist))
+            return False, msg
+        return True, ''
 
     def _updateParameters(self, params):
         return
