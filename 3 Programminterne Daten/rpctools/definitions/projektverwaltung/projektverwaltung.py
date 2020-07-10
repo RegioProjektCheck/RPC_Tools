@@ -45,6 +45,12 @@ class Projektverwaltung(Tool):
         self.output.add_layer("projektdefinition", layer, fc,
                               name=u"Nutzungen des Plangebiets")
 
+        # Add Layers
+        self.output.add_layer('projektdefinition', 'Anbindungspunkte',
+                              featureclass='Anbindungspunkte',
+                              workspace='FGDB_Verkehr.gdb',
+                              template_folder='Verkehr', zoom=False)
+
         self.output.add_osm_layer()
         self.output.add_project_contour()
 
@@ -240,7 +246,7 @@ class ProjektAnlegen(Projektverwaltung):
         arcpy.AddField_management(tfl, "Wege_gesamt", "LONG")
         arcpy.AddField_management(tfl, "Wege_MIV", "LONG")
         arcpy.AddField_management(tfl, "IDGebietstyp", "TEXT")
-        
+
         #arcpy.AddField_management(teilfaechen_plangebiet, "Bilanzsumme", "FLOAT")
         return tfl, gdbPfad
 

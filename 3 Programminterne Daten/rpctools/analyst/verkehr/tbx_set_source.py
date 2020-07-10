@@ -35,7 +35,7 @@ class SetSource(Tool):
         self.parent_tbx.dataframe_to_table('Anbindungspunkte', df_points,
                                            ['id_teilflaeche'])
 
-        self.output.add_layer('verkehr', 'Anbindungspunkte',
+        self.output.add_layer('projektdefinition', 'Anbindungspunkte',
                               featureclass='Anbindungspunkte',
                               template_folder='Verkehr',
                               zoom=True, zoom_extent=self._extent)

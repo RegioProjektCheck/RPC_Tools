@@ -18,7 +18,7 @@ class Routing(Tool):
 
     def add_outputs(self):
         # Add Layers
-        self.output.add_layer('verkehr', 'Anbindungspunkte',
+        self.output.add_layer('projektdefinition', 'Anbindungspunkte',
                               featureclass='Anbindungspunkte',
                               template_folder='Verkehr', zoom=False)
         self.output.add_layer('verkehr', 'links',
@@ -59,9 +59,8 @@ class Routing(Tool):
             #if not trips:
                 #continue
             o.areas.add_area(source_id, trips=trips)
-            # ? lat = y lon = x
             source = Point.from_xy(y=y_coord, x=x_coord,
-                                   srid_proj=o.p2, srid_geogr=o.p1)  # centroid
+                                   srid_proj=o.p2, srid_geogr=o.p1)
 
             # calculate segments around centroid
             inner_dest = o.create_circle(source, dist=mid_circle,
