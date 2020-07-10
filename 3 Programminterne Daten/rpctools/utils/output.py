@@ -336,10 +336,10 @@ class Output(object):
         del(current_mxd)
         return projectlayer
 
-    def remove_layer(self, layername):
+    def remove_layer(self, layername, in_project=True):
         '''remove layers with given name from project
         (removes all appearances)'''
-        layers = self.get_layers(layername)
+        layers = self.get_layers(layername, in_project=in_project)
         current_mxd = arcpy.mapping.MapDocument("CURRENT")
         current_dataframe = current_mxd.activeDataFrame
         for layer in layers:
@@ -360,7 +360,7 @@ class Output(object):
         mxd.findAndReplaceWorkspacePaths(source_ws, target_ws)
         arcpy.RefreshActiveView()
 
-    def get_layers(self, layername, projectname=None):
+    def get_layers(self, layername, projectname=None, in_project=True):
         """
         Return all layers with given name that are grouped in given project
         (respectively in currently set project)
@@ -377,9 +377,12 @@ class Output(object):
         """
 
         # Neuen Layer hinzufuegen
-        project_layer = self.get_projectlayer(projectname=projectname)
-        if not project_layer:
-            return []
+        if in_project:
+            project_layer = self.get_projectlayer(projectname=projectname)
+            if not project_layer:
+                return []
+        else:
+            project_layer = arcpy.mapping.MapDocument("CURRENT")
         layers = arcpy.mapping.ListLayers(project_layer, layername)
         return layers
 
@@ -668,7 +671,8 @@ class Output(object):
         current_dataframe = current_mxd.activeDataFrame
         self.set_backgroundgrouplayer(current_dataframe)
 
-        if not redraw and self.layer_exists(layer.name):
+        if not redraw and (self.layer_exists(layer.name,
+                                             in_project=layer.in_project)):
             arcpy.RefreshActiveView()
             return
         self.remove_layer(layer.name)
@@ -830,11 +834,15 @@ class Output(object):
         for layer in layers_sorted[:-1]:
             arcpy.mapping.MoveLayer(df, ref_layer, layer, "BEFORE")
 
-    def layer_exists(self, layername):
-        projektname = self.projectname
+    def layer_exists(self, layername, in_project=True):
         current_mxd = arcpy.mapping.MapDocument("CURRENT")
-        current_dataframe = current_mxd.activeDataFrame
-        project_layer = arcpy.mapping.ListLayers(current_dataframe, projektname)
+        if in_project:
+            projektname = self.projectname
+            current_dataframe = current_mxd.activeDataFrame
+            project_layer = arcpy.mapping.ListLayers(
+                current_dataframe, projektname)
+        else:
+            project_layer = [current_mxd]
         if not project_layer or not arcpy.mapping.ListLayers(project_layer[0],
                                                              layername):
             return False
