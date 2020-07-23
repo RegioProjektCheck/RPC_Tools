@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 import polyline
 import arcpy
 from cPickle import dump, load
@@ -12,12 +14,14 @@ from rpctools.utils.config import Folders
 from rpctools.addins.common import config
 from rpctools.utils.spatial_lib import to_project_srid
 import numpy as np
+import pandas as pd
 import os
+
 
 class Route(object):
     """Route to a destination"""
 
-    def __init__(self, route_id, source_id):
+    def __init__(self, route_id, source_id, nodes=[]):
         """
         Parameters
         ----------
@@ -25,22 +29,61 @@ class Route(object):
         """
         self.route_id = route_id
         self.source_id = source_id
-        self.node_ids = np.array([], dtype='i4')
+        self.nodes = nodes
         self.weight = 0
 
     @property
     def source_node(self):
-        if not len(self.node_ids):
+        if not len(self.nodes):
             return None
-        return self.node_ids[0]
+        return self.nodes[0]
+
+    @property
+    def destination_node(self):
+        if not len(self.nodes):
+            return None
+        return self.nodes[-1]
+
+    @property
+    def node_ids(self):
+        return [node.node_id for node in self.nodes]
+
+    @property
+    def links(self):
+        links = []
+        for i in range(len(self.nodes)):
+            if i < len(self.nodes) - 1:
+                link = Link(self.nodes[i], self.nodes[i+1], i)
+                links.append(link)
+        return links
 
 
 class Routes(OrderedDict):
     """Routes-object"""
 
-    def get_route(self, route_id, source_id):
+    def get_route(self, source, destination):
         """
-        (add and) get route with given route_id
+        get route between given nodes
+
+        Parameters
+        ----------
+        source : Node
+
+        destination : Node
+
+        Returns
+        -------
+        route
+        """
+        for route in self.itervalues():
+            if (source.node_id == route.nodes[0].node_id and
+                destination.node_id == route.nodes[-1].node_id):
+                return route
+        return None
+
+    def add_route(self, route_id, source_id, nodes=[]):
+        """
+        add  route with given route_id
 
         Parameters
         ----------
@@ -54,7 +97,7 @@ class Routes(OrderedDict):
         """
         route = self.get(route_id)
         if route is None:
-            route = Route(route_id, source_id)
+            route = Route(route_id, source_id, nodes)
             self[route_id] = route
         return route
 
@@ -67,12 +110,11 @@ class Routes(OrderedDict):
         -------
         np.array()
         """
-        return np.unique(np.array([route.source_node
+        return np.unique(np.array([route.source_node.node_id
                          for route in self.itervalues()], dtype='i4'))
 
-    def get_n_routes_for_area(self, source_id):
-        return len([route.source_id
-                    for route in self.itervalues()
+    def get_n_routes(self, source_id):
+        return len([route.source_id for route in self.itervalues()
                     if route.source_id == source_id])
 
 
@@ -100,7 +142,7 @@ class TransferNodes(OrderedDict):
         """
         transfer_node = self.get(node.node_id)
         if transfer_node is None:
-            transfer_node = TransferNode(node, self.areas)
+            transfer_node = TransferNode(node)
             self[transfer_node.node_id] = transfer_node
         transfer_node.routes[route.route_id] = route
         return transfer_node
@@ -110,7 +152,7 @@ class TransferNodes(OrderedDict):
         """Total weights of all transfer nodes"""
         return float(sum((tn.weight for tn in self.itervalues())))
 
-    def get_total_area_weights(self, source_id):
+    def get_total_weights(self, source_id):
         """Total weights of all transfer nodes"""
         total_weight = 0.0
         for tn in self.itervalues():
@@ -131,24 +173,13 @@ class TransferNodes(OrderedDict):
         adjust weights to 100% and assign to routes that pass the transfer node
         """
         total_weights = self.total_weights
-        print('-------------------', total_weights)
-        n_areas = len(self.areas)
-        total_weights_areas = {}
-        n_routes_areas = {}
+        total_weights_sources = {}
+        n_routes_sources = {}
         for tn in self.itervalues():
             tn.weight /= total_weights
             for route in tn.routes.itervalues():
-                n_routes = n_routes_areas.get(route.source_id, 0)
-                n_routes_areas[route.source_id] = n_routes + 1
-        for area in self.areas.itervalues():
-            total_weights_areas[area.source_id] = \
-                self.get_total_area_weights(area.source_id)
-
-        for tn in self.itervalues():
-            for route in tn.routes.itervalues():
-                n_routes_for_area = tn.get_n_routes_for_area(route.source_id)
-                total_weight_area = total_weights_areas[route.source_id]
-                route.weight = tn.weight / total_weight_area / n_routes_for_area
+                n_routes = n_routes_sources.get(route.source_id, 0)
+                n_routes_sources[route.source_id] = n_routes + 1
 
 
 class Nodes(object):
@@ -162,55 +193,31 @@ class Nodes(object):
         self.coords2nodes = OrderedDict()
         self.id2nodes = OrderedDict()
         self.serial = 0
-        self.links = Links()
 
-    def add_points(self, coord_list, route):
+    def add_coordinates(self, coord_list):
         """
-        Add Nodes, create link and add route_id to link
+        Add Nodes
 
         Parameters
         ----------
         coord_list : list of tuple of floats
 
-        route : int
-
         """
-        previous_node = None
-        node_ids = []
+        nodes = []
         for coords in coord_list:
-            node = self.get_or_set_node_from_coord(coords)
-            if previous_node:
-                link = self.links.add_vertex(previous_node, node)
-                link.add_route(route.route_id)
-            previous_node = node
-            node_ids.append(node.node_id)
-        route.node_ids = np.array(node_ids, dtype='i4')
-
-    def get_or_set_node_from_coord(self, coords):
-        """
-        get an existing node or add a new node from given coordinates
-
-        Parameters
-        ----------
-        coords : tuple(float, float)
-            (lat, lon)
-
-        Returns
-        -------
-        node : Point-instance
-        """
-        node = self.coords2nodes.get(coords)
-        if node is None:
-            node = Point(*coords)
-            node.node_id = self.serial
-            self.coords2nodes[coords] = node
-            self.id2nodes[node.node_id] = node
-            self.serial += 1
-        return node
+            node = self.coords2nodes.get(coords)
+            if node is None:
+                node = Point(*coords)
+                node.node_id = self.serial
+                self.coords2nodes[coords] = node
+                self.id2nodes[node.node_id] = node
+                self.serial += 1
+            nodes.append(node)
+        return nodes
 
     def get_id(self, point):
         """"""
-        node_id = self.coords2nodes[(point.lat, point.lon)]
+        node_id = self.coords2nodes[(point.x, point.y)]
         return self.get_node(node_id)
 
     def get_node(self, node_id):
@@ -276,10 +283,9 @@ class Point(object):
         return geom
 
 
-
 class TransferNode(Point):
     """"""
-    def __init__(self, node, areas):
+    def __init__(self, node):
         self.lat = node.lat
         self.lon = node.lon
         self.node_id = node.node_id
@@ -287,13 +293,12 @@ class TransferNode(Point):
         self.y = node.y
         self.routes = Routes()
         self.weight = 0.0
-        self.areas = areas
 
     @property
     def n_routes(self):
         return len(self.routes)
 
-    def get_n_routes_for_area(self, source_id):
+    def get_n_routes(self, source_id):
         return sum([1 for route in self.routes.itervalues()
                    if route.source_id == source_id])
 
@@ -353,30 +358,30 @@ class Links(object):
 
 class Link(object):
     """A Vertex"""
-    def __init__(self, node1, node2, vertex_id):
-        self.node1 = node1
-        self.node2 = node2
+    def __init__(self, from_node, to_node, vertex_id):
+        self.from_node = from_node
+        self.to_node = to_node
         self.link_id = vertex_id
         self.routes = set()
         self.weight = 0.0
         self.distance_from_source = 9999999
 
     def __repr__(self):
-        return '->'.join([repr(self.node1), repr(self.node2)])
+        return '->'.join([repr(self.from_node), repr(self.to_node)])
 
     def __hash__(self):
-        return hash(((self.node1.x, self.node1.y),
-                     (self.node2.x, self.node2.y)))
+        return hash(((self.from_node.x, self.from_node.y),
+                     (self.to_node.x, self.to_node.y)))
 
     @property
     def length(self):
-        meter = np.sqrt((self.node2.x - self.node1.x) ** 2 +
-                         (self.node2.y - self.node1.y) **2)
+        meter = np.sqrt((self.to_node.x - self.from_node.x) ** 2 +
+                         (self.to_node.y - self.from_node.y) ** 2)
         return meter
 
     @property
     def node_ids(self):
-        return (self.node1.node_id, self.node2.node_id)
+        return (self.from_node.node_id, self.to_node.node_id)
 
     def add_route(self, route_id):
         """add route_id to route"""
@@ -385,8 +390,8 @@ class Link(object):
     def get_geom(self):
         """Create polyline from geometry"""
         if self.length:
-            n1 = self.node1
-            n2 = self.node2
+            n1 = self.from_node
+            n2 = self.to_node
             coord_list = [(n1.y, n1.x), (n2.y, n2.x)]
             geom = arcpy.Polyline(
                 arcpy.Array([arcpy.Point(coords[1], coords[0])
@@ -394,51 +399,24 @@ class Link(object):
             return geom
 
 
-class Area(object):
-    """Teilfläche"""
-    def __init__(self, source_id, trips=1):
-        self.source_id = source_id
-        self.trips = trips
-
-
-class Areas(OrderedDict):
-    """All Areas"""
-    def add_area(self, source_id, trips=1):
-        """"""
-        self[source_id] = Area(source_id, trips)
-
-
 class OTPRouter(object):
-    def __init__(self, workspace, epsg=31467):
-        self.url = r'https://projektcheck.ggr-planung.de/otp/routers/deutschland/plan'
-        self.ws = workspace
-        #self.ws = r'F:\Projekte SH\RPC Tools\4 Programminterne Daten\templates\Template\FGDB_Verkehr.gdb'
-        self.router = 'deutschland'
+    url = r'https://projektcheck.ggr-planung.de/otp/routers/deutschland/plan'
+    router = 'deutschland'
+    router_epsg = 4326
+
+    def __init__(self, distance=None, epsg=31467):
         self.epsg = epsg
+        self.dist = distance
+        self.nodes = Nodes(epsg)
         self.p1 = Proj(init='epsg:4326')
         self.p2 = Proj(init='epsg:{}'.format(self.epsg))
-        self.nodes = Nodes(epsg)
+        self.links = Links()
         self.polylines = []
         self.routes = Routes()
-        self.areas = Areas()
         self.transfer_nodes = TransferNodes()
-        self.transfer_nodes.areas = self.areas
         self.nodes_have_been_weighted = False
         self.extent = (0.0, 0.0, 0.0, 0.0)
-
-    def dump(self, filename):
-        """write myself to dumpfile"""
-        with open(filename, 'wb') as f:
-            dump(self, f, protocol=-1)
-
-    @classmethod
-    def from_dump(cls, filename, workspace=''):
-        """"""
-        with open(filename, 'rb') as f:
-            self = load(f)
-        if workspace:
-            self.ws = workspace
-        return self
+        self.route_counter = 0
 
     def __repr__(self):
         """A string representation"""
@@ -446,7 +424,8 @@ class OTPRouter(object):
         return text.format(n=len(self.nodes), r=len(self.routes), t=len(
             self.transfer_nodes))
 
-    def get_routing_request(self, source, destination, mode='CAR'):
+    def route(self, source, destination, source_id=None, route_id=None,
+              mode='CAR'):
         """
         get a routing requset for route from source to destination
 
@@ -458,25 +437,28 @@ class OTPRouter(object):
 
         Returns
         -------
-        json
+        Route
+            route
         """
         params = dict(routerId=self.router,
-                      fromPlace=source,
-                      toPlace=destination,
+                      fromPlace='{},{}'.format(source.lat, source.lon),
+                      toPlace='{},{}'.format(destination.lat, destination.lon),
                       mode=mode,
                       maxPreTransitTime=1200)
         r = requests.get(self.url, params=params, verify=False)
-        return r.json()
+        r.raise_for_status()
+        if source_id is None:
+            source_id = source.node_id
+        route = self.add_route(r.json(), source_id=source_id, route_id=route_id)
+        return route
 
-    def decode_coords(self, json, route_id, source_id=0):
+    def add_route(self, json, source_id=0, route_id=None):
         """
         Parse the geometry from a json
 
         Parameters
         ----------
         json : json-instance
-
-        route_id : int
 
         source_id : int, optional(default=0)
         """
@@ -487,45 +469,31 @@ class OTPRouter(object):
         leg = itinerary['legs'][0]
         points = leg['legGeometry']['points']
         coord_list = polyline.decode(points)
-        route = self.routes.get_route(route_id, source_id)
-        self.nodes.add_points(coord_list, route)
-        if source_id not in self.areas:
-            self.areas.add_area(source_id)
+        if len(coord_list) == 0:
+            return
+        coord_list = coord_list[:-1]
 
-    def coord_list2polyline(self, coord_list):
-        """
-        create arcpy.Polyline from list of coordinates
-        and append to polylines list
+        nodes = self.nodes.add_coordinates(coord_list)
 
-        Parameters
-        ----------
-        coord_list : list of tuples of coordinates
+        source_node = nodes[0]
+        destination_node = nodes[-1]
 
+        route = self.routes.get_route(source_node, destination_node)
 
-        """
-        if not len(coord_list):
-            return None
-        geom = arcpy.Polyline(
-            arcpy.Array([arcpy.Point(coords[1], coords[0])
-                         for coords in coord_list]))
-        self.polylines.append(geom)
+        if not route:
+            route = self.routes.add_route(
+                route_id if route_id is not None else self.route_counter,
+                source_id, nodes=nodes
+            )
+            previous_node = None
+            for node in nodes:
+                if previous_node:
+                    link = self.links.add_vertex(previous_node, node)
+                    link.add_route(route.route_id)
+                previous_node = node
+            self.route_counter += 1
 
-    def insert_polyline(self, fc):
-        """
-        Insert polylines to fc
-
-        Parameters
-        ----------
-        fc : str
-            the path of the feature-class
-
-        """
-        sr = arcpy.SpatialReference(4326)
-        fields = ['source', 'destination', 'SHAPE@']
-        with arcpy.da.InsertCursor(fc, fields) as rows:
-            for dest, geom in enumerate(self.polylines):
-                if geom:
-                    rows.insertRow((1, dest, geom))
+        return route
 
     def create_circle(self, source, dist=1000, n_segments=20):
         """
@@ -543,16 +511,10 @@ class OTPRouter(object):
             the number of segments of the (nearly) circle
 
         """
-        if source.x is None:
-            source_x, source_y = transform(self.p1, self.p2,
-                                           source.lon, source.lat)
-        else:
-            source_x, source_y = source.x, source.y
         angel = np.linspace(0, np.pi*2, n_segments)
-        x = source_x + dist * np.cos(angel)
-        y = source_y + dist * np.sin(angel)
-        lon, lat = transform(self.p2, self.p1, x, y)
-        destinations = np.vstack([lon, lat]).T
+        x = source.x + dist * np.cos(angel)
+        y = source.y + dist * np.sin(angel)
+        destinations = np.vstack([x, y]).T
 
         return destinations
 
@@ -570,11 +532,11 @@ class OTPRouter(object):
         transfer_node : Node
         """
         route = self.routes[route_id]
-        route_nodes = route.node_ids
-        route_dist_vector = dist_vector[route_nodes]
+        node_ids = route.node_ids
+        route_dist_vector = dist_vector[node_ids]
 
         idx = np.argmax(route_dist_vector)
-        node_id = route_nodes[idx]
+        node_id = node_ids[idx]
         node = self.nodes.get_node(node_id)
         transfer_node = self.transfer_nodes.get_node(node, route)
         transfer_node.dist = route_dist_vector[idx]
@@ -588,15 +550,15 @@ class OTPRouter(object):
             transfer_node = self.get_max_node_for_route(dist_vector,
                                                         route.route_id)
 
-    def nodes_to_graph(self, meters=600):
+    def build_graph(self, distance=None):
         """Convert nodes and links to graph"""
-        data = self.nodes.links.link_length
-        node_ids = self.nodes.links.node_ids
+        self.nodes.transform()
+        data = self.links.link_length
+        node_ids = self.links.node_ids
         row = node_ids.from_node
         col = node_ids.to_node
         N = len(self.nodes)
         mat = csc_matrix((data, (row, col)), shape=(N, N))
-        source_nodes = self.routes.source_nodes
         dist_matrix = dijkstra(mat,
                                directed=True,
                                return_predecessors=False,
@@ -604,23 +566,24 @@ class OTPRouter(object):
                                )
         dist_vector = dist_matrix.min(axis=0)
         self.set_link_distance(dist_vector)
-        dist_vector[dist_vector > meters] = np.NINF
+        if distance:
+            dist_vector[dist_vector > distance] = np.NINF
         self.get_max_nodes(dist_vector)
 
-    def remove_redundant_routes(self):
+    def remove_redundancies(self):
         '''
-        remove routes outgoing from transfer nodes (incl. the transfer nodes)
-        that are part of another route
+        remove transfer nodes and their routes that are part of another route
         '''
+
         redundant_nodes = []
-        transfer_nodes = self.transfer_nodes.values()
+        transfer_nodes = self.transfer_nodes.itervalues()
         for transfer_node in transfer_nodes:
             is_redundant = False
             for tn in transfer_nodes:
                 if (tn.node_id == transfer_node.node_id
                     or tn.node_id in redundant_nodes):
                     continue
-                for route in tn.routes.values():
+                for route in tn.routes.itervalues():
                     # transfer node is part of the route of
                     # another transfer node
                     in_route = np.in1d(transfer_node.node_id,
@@ -631,108 +594,61 @@ class OTPRouter(object):
                         break
                 if is_redundant:
                     break
-        redundant_routes = []
+        part_routes = []
         for node in redundant_nodes:
             self.transfer_nodes.pop(node.node_id, None)
-            redundant_routes.extend(list(node.routes))
+            part_routes.extend(list(node.routes))
 
-        redundant_routes = np.unique(redundant_routes)
+        part_routes = np.unique(part_routes)
         for route_id in redundant_nodes:
             self.routes.pop(route_id, None)
 
-        return redundant_routes
-
     def set_link_distance(self, dist_vector):
         """set distance to plangebiet for each link"""
-        for link in self.nodes.links:
-            node_id = link.node2.node_id
+        for link in self.links:
+            node_id = link.to_node.node_id
             dist = dist_vector[node_id]
             link.distance_from_source = dist
 
-    def calc_vertex_weights(self):
-        """calc weight of link"""
-        for link in self.nodes.links:
-            link.weight = 0.
-            for route_id in link.routes:
-                route = self.routes[route_id]
-                if not route:
-                    continue
-                route_weight = route.weight
-                area = self.areas[route.source_id]
-                route_trips = route_weight * area.trips
-                link.weight += route_trips
+    def get_polyline_features(self):
+        """get a dataframe containing the polyline-features from the links"""
+        fields = ['link_id', 'weight', 'distance_from_source', 'geom']
+        df = pd.DataFrame(columns=fields)
+        i = 0
+        for link in self.links:
+            geom = link.get_geom()
+            if self.dist and link.distance_from_source >= self.dist:
+                continue
+            if geom:
+                df.loc[i] = [link.link_id, link.weight,
+                             link.distance_from_source, geom]
+                i += 1
+        return df
 
-    def create_polyline_features(self):
-        """Create the polyline-features from the links"""
-        sr = arcpy.SpatialReference(self.epsg)
-        fields = ['link_id', 'weight', 'distance_from_source', 'SHAPE@']
-
-        fc = os.path.join(self.ws, 'links')
-        self.truncate(fc)
-        with arcpy.da.InsertCursor(fc, fields) as rows:
-            for link in self.nodes.links:
-                geom = link.get_geom()
-                if geom and link.distance_from_source <= self.dist:
-                    rows.insertRow((link.link_id, link.weight,
-                                    link.distance_from_source, geom))
-
-    def create_transfer_node_features(self):
-        """Create the point-features from the transfer nodes"""
-        sr = arcpy.SpatialReference(self.epsg)
-        fields = ['node_id', 'Gewicht', 'Manuelle_Gewichtung',
-                  'SHAPE@', 'Name']
-        fc = os.path.join(self.ws, 'Zielpunkte')
-        self.truncate(fc)
+    def get_transfer_node_features(self):
+        """get a dataframe containing the point-features from
+        the transfer nodes"""
+        fields = ['node_id', 'weight', 'SHAPE', 'name']
+        df = pd.DataFrame(columns=fields)
         counter = 1
-        with arcpy.da.InsertCursor(fc, fields) as rows:
-            for node in self.transfer_nodes.itervalues():
-                name = 'Herkunfts-/Zielpunkt ' + str(counter)
-                counter += 1
-                geom = node.get_geom()
-                if geom:
-                    rows.insertRow((node.node_id,
-                                    node.weight * 100,
-                                    node.weight * 100,
-                                    geom, name))
+        i = 0
+        for node in self.transfer_nodes.itervalues():
+            name = 'Herkunfts-/Zielpunkt ' + str(counter)
+            counter += 1
+            geom = node.get_geom()
+            if geom:
+                df.loc[i] = [node.node_id, node.weight * 100, geom, name]
+                i += 1
+        return df
 
-    def truncate(self, fc):
-        """
-        Truncate the table
-
-        Parameters
-        ----------
-        fc : str
-            the table to truncate
-        """
-        #arcpy.TruncateTable_management(in_table=fc)
-        with arcpy.da.UpdateCursor(fc, "OID@") as rows:
-            for row in rows:
-                rows.deleteRow()
-
-
-    def create_node_features(self):
-        """Create the point-features from all nodes"""
-        sr = arcpy.SpatialReference(self.epsg)
-        fields = ['node_id',
-                  'SHAPE@']
-        fc = os.path.join(self.ws, 'nodes')
-        self.truncate(fc)
-        with arcpy.da.InsertCursor(fc, fields) as rows:
-            for node in self.nodes:
-                geom = node.get_geom()
-                if geom:
-                    rows.insertRow((node.node_id,
-                                    geom))
-
-    def set_layer_extent(self):
-        coords = [tn.get_geom() for tn in self.transfer_nodes.itervalues()]
-        transformed = [to_project_srid(point.X, point.Y , config.epsg)
-                       for point in coords]
-        x_coords = [point[0] for point in transformed]
-        y_coords = [point[1] for point in transformed]
-        x_max = max(x_coords)
-        x_min = min(x_coords)
-        y_max = max(y_coords)
-        y_min = min(y_coords)
-        self.extent = (x_min, y_min, x_max, y_max)
-
+    def get_node_features(self):
+        """get a dataframe containing the point-features from all nodes"""
+        fields = ['node_id', 'geom']
+        df = pd.DataFrame(columns=fields)
+        i = 0
+        for node in self.nodes:
+            geom = node.geom
+            if geom:
+                df.loc[i] = [node.node_id, geom]
+                i += 1
+        return df
