@@ -25,7 +25,7 @@ class Routing(Tool):
                               featureclass='Verkehrsbelastung',
                               template_folder='Verkehr',
                               name='Zusätzliche PKW-Fahrten', zoom=False,
-                              symbology_classes=(15, 'weight'))
+                              symbology_classes=(15, 'trips'))
         self.output.add_layer('verkehr', 'Zielpunkte',
                               featureclass='Zielpunkte',
                               template_folder='Verkehr',
@@ -33,7 +33,7 @@ class Routing(Tool):
                               zoom=True, zoom_extent=self._extent)
 
     def run(self):
-        # self.calculate_transfer_nodes()
+        self.calculate_transfer_nodes()
         self.route_transfer_nodes()
         self.calculate_traffic_load()
 
@@ -54,7 +54,8 @@ class Routing(Tool):
 
         for source_id, trips, tfl_use, shape in data_tfl:
             arcpy.AddMessage(
-                u"Suche Routen ausgehend von Teilfläche {}...".format(source_id))
+                u'Suche Routen ausgehend von Teilfläche {}...'
+                .format(source_id))
             x_coord, y_coord = shape
             source = Point.from_xy(y=y_coord, x=x_coord,
                                    srid_proj=otp_router.p2,
@@ -98,13 +99,16 @@ class Routing(Tool):
 
         for source_id, trips, tfl_use, shape in data_tfl:
             arcpy.AddMessage(
-                u'Suche Routen zwischen Teilfläche {}'
+                u'Suche Routen zwischen Teilfläche {} '
                 u'und den Herkunfts- und Zielpunkten...'.format(source_id))
             x_coord, y_coord = shape
             connector = Point.from_xy(y=y_coord, x=x_coord,
                                       srid_proj=otp_router.p2,
                                       srid_geogr=otp_router.p1)
-
+            from_ids = []
+            to_ids = []
+            tn_ids = []
+            shapes = []
             for tn_id, shape in transfer_nodes:
                 x_coord, y_coord = shape
                 destination = Point.from_xy(y=y_coord, x=x_coord,
@@ -122,107 +126,63 @@ class Routing(Tool):
                         lg = link.get_geom()
                         if from_id == to_id or not lg:
                             continue
-                        toolbox.insert_rows_in_table(
-                            'RouteLinks',
-                            {'from_node_id': from_id,
-                             'to_node_id': to_id,
-                             'transfer_node_id': from_id,
-                             'id_teilflaeche': source_id,
-                             'SHAPE': lg}
-                        )
+                        from_ids.append(from_id)
+                        to_ids.append(to_id)
+                        tn_ids.append(tn_id)
+                        shapes.append(lg)
 
-
-        #for i, area in enumerate(self.areas):
-            #self.log(f'Suche Routen zwischen Teilfläche {area.name} und den '
-                     #'Herkunfts- und Zielpunkten...')
-            #connector = self.connectors.get(id_teilflaeche=area.id)
-            #qpoint = connector.geom.asPoint()
-            #pcon = Point(id=area.id, x=qpoint.x(), y=qpoint.y(),
-                         #epsg=project_epsg)
-            #pcon.transform(OTPRouter.router_epsg)
-            #for transfer_node in self.transfer_nodes:
-                #qpoint = transfer_node.geom.asPoint()
-                #pnode = Point(id=transfer_node.id, x=qpoint.x(), y=qpoint.y(),
-                              #epsg=project_epsg)
-                #pnode.transform(otp_router.router_epsg)
-                #out_route = otp_router.route(pcon, pnode)
-                #in_route = otp_router.route(pnode, pcon)
-                #for route in out_route, in_route:
-                    #if not route:
-                        #continue
-                    #for link in route.links:
-                        #geom = QgsGeometry()
-                        #from_id = link.from_node.node_id
-                        #to_id = link.to_node.node_id
-                        #lg = link.get_geom()
-                        #if from_id == to_id or not lg:
-                            #continue
-                        #geom.fromWkb(lg.ExportToWkb())
-                        #geom.transform(transform)
-                        #self.links.add(from_node_id=from_id, to_node_id=to_id,
-                                       #transfer_node_id=transfer_node.id,
-                                       #area_id=area.id, geom=geom)
+            toolbox.insert_rows_in_table(
+                'RouteLinks',
+                {'from_node_id': from_ids,
+                 'to_node_id': to_ids,
+                 'transfer_node_id': tn_ids,
+                 'id_teilflaeche': [source_id] * len(from_ids),
+                 'SHAPE@': shapes}
+            )
 
     def calculate_traffic_load(self):
-        pass
 
-        #toolbox = self.parent_tbx
-        ## tbx settings
-        #inner_circle = toolbox.par.inner.value
-        #mid_circle = inner_circle + 500
-        #outer_circle = inner_circle + self._outer_circle
-        ##arcpy.Delete_management(tmp_table)
-        ## get data from Wege_je_nutzung table
-        #data_wjn = toolbox.query_table('Wege_je_nutzung',
-                                       #columns=['Nutzungsart', 'Wege_gesamt',
-                                                #'PKW_Anteil'])
-        #data_tfl = self.get_areas_data()
-        #data_tfl = self.calc_trips(data_tfl, data_wjn)
+        toolbox = self.parent_tbx
+        toolbox.delete_rows_in_table('Verkehrsbelastung')
 
-        ## calculate routes
-        #workspace = self.folders.get_db()
-        #o = OTPRouter(workspace)
-        #o.dist = inner_circle
-        #r_id = 0
-        #for single_tfl in data_tfl:
-            #source_id, trips, tfl_use, shape = single_tfl
-            #arcpy.AddMessage(
-                #u"Suche Routen ausgehend von Teilfläche {}...".format(source_id))
-            #x_coord, y_coord = shape
-            ##if not trips:
-                ##continue
-            #o.areas.add_area(source_id, trips=trips)
-            #source = Point.from_xy(y=y_coord, x=x_coord,
-                                   #srid_proj=o.p2, srid_geogr=o.p1)
+        arcpy.AddMessage('Verteile das Verkehrsaufkommen...')
 
-            ## calculate segments around centroid
-            #inner_dest = o.create_circle(source, dist=mid_circle,
-                                         #n_segments=self._n_segments)
-            #outer_dest = o.create_circle(source, dist=outer_circle,
-                                         #n_segments=self._n_segments)
-            #destinations = np.concatenate([inner_dest, outer_dest])
+        data_wjn = toolbox.query_table('Wege_je_nutzung',
+                                       columns=['Nutzungsart', 'Wege_gesamt',
+                                                'PKW_Anteil'])
+        df_links = toolbox.table_to_dataframe(
+            'RouteLinks', columns=['from_node_id', 'to_node_id',
+                                   'transfer_node_id', 'id_teilflaeche',
+                                   'SHAPE@'])
+        df_links['wege_miv'] = 0
 
-            ## calculate the routes to the segments
-            #for (lon, lat) in destinations:
-                #destination = Point(lat, lon)
-                #json = o.get_routing_request(source, destination)
-                #o.decode_coords(json, route_id=r_id, source_id=source_id)
-                #r_id += 1
+        data_tfl = self.calc_trips(self.get_areas_data(), data_wjn)
+        for source_id, trips, tfl_use, shape in data_tfl:
+            idx = df_links['id_teilflaeche'] == source_id
+            df_links.loc[idx, 'wege_miv'] = trips
 
-        #o.nodes.transform()
-        #o.nodes_to_graph(meters=inner_circle)
-        #o.remove_redundant_routes()
-        #arcpy.AddMessage("berechne Zielknoten...")
-        #o.transfer_nodes.calc_initial_weight()
-        #arcpy.AddMessage("berechne Gewichte...")
-        #o.calc_vertex_weights()
-        #o.create_polyline_features()
-        #o.create_node_features()
-        #o.create_transfer_node_features()
-        #o.set_layer_extent()
+        df_transfer = toolbox.table_to_dataframe(
+            'Zielpunkte', columns=['node_id', 'weight'])
+        df_weighted = df_links.merge(
+                df_transfer, how='left', left_on='transfer_node_id',
+                right_on='node_id')
+        # ways include back and forth
+        df_weighted['wege_miv'] /= 2
+        df_weighted['weight'] /= 100
+        df_weighted['trips'] = df_weighted['wege_miv'] * df_weighted['weight']
+        # linked nodes without direction
+        df_weighted['dirless'] = ['{}-{}'.format(*sorted(t))
+                                      for t in zip(df_weighted['from_node_id'],
+                                                   df_weighted['to_node_id'])]
+        df_grouped = df_weighted.groupby('dirless')
+        trips = []
+        shapes = []
+        for i, group in df_grouped:
+            trips.append(group['trips'].sum())
+            shapes.append(group['SHAPE@'].values[0])
 
-        #self._extent = o.extent
-        #o.dump(self.folders.get_otp_pickle_filename(check=False))
+        toolbox.insert_rows_in_table('Verkehrsbelastung',
+                                     {'trips': trips, 'SHAPE@': shapes})
 
     def get_areas_data(self):
         """
