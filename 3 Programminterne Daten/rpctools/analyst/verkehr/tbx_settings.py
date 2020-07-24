@@ -8,36 +8,14 @@ import arcpy
 import pandas as pd
 import os
 
+
 class Settings(Routing):
     _workspace = 'FGDB_Verkehr.gdb'
     _param_projectname = 'project'
-    _initial_routing_exists = False
-    _transfernodes_layer_exsists = False
-    _nodes_have_been_weighted = False
 
     def add_outputs(self):
-        if self._initial_routing_exists:
-            self.output.add_layer('verkehr', 'links',
-                                  featureclass='links',
-                                  template_folder='Verkehr',
-                                  name='Zusätzliche PKW-Fahrten', zoom=True,
-                                  zoom_extent=self._extent,
-                                  symbology_classes=(15, 'weight'))
-            if self._transfernodes_layer_exsists:
-                return
-            if self._nodes_have_been_weighted:
-                self.output.add_layer('verkehr', 'Zielpunkte_gewichtet',
-                                      featureclass='Zielpunkte',
-                                      template_folder='Verkehr',
-                                      name='Zielpunkte gewichtet',
-                                      symbology_classes=(10, 'Neue_Gewichte'),
-                                      zoom=False)
-            else:
-                self.output.add_layer('verkehr', 'Zielpunkte',
-                                      featureclass='Zielpunkte',
-                                      template_folder='Verkehr',
-                                      name='Herkunfts-/Zielpunkte',
-                                      zoom=False)
+        if self.initial_routing_done:
+            super(Settings, self).add_outputs()
 
     def run(self):
         toolbox = self.parent_tbx
@@ -59,45 +37,15 @@ class Settings(Routing):
                           {'Wege_gesamt': wege_e, 'PKW_Anteil': pkw_e},
                           where='Nutzungsart={}'.format(
                               nart.EINZELHANDEL))
-        #self.remove_output()
-        # delete pickle file
-        pickle_path = self.folders.get_otp_pickle_filename(check=False)
 
-        if os.path.exists(pickle_path):
-            self._initial_routing_exists = True
-            otp_router = OTPRouter.from_dump(pickle_path)
-            data_wjn = [(1, wege_w, pkw_w), (2, wege_g, pkw_g), (3, wege_e, pkw_e)]
-            data_tfl = self.get_areas_data()
-            data_tfl = pd.DataFrame(self.calc_trips(data_tfl, data_wjn))
+        if self.initial_routing_done:
+            self.calculate_traffic_load()
 
-            for area in otp_router.areas.itervalues():
-                trips = data_tfl.loc[(data_tfl[0] == area.source_id), 1]
-                area.trips = trips.values[0]
+    @property
+    def initial_routing_done(self):
+        table = self.parent_tbx.query_table('RouteLinks')
+        return len(table) > 0
 
-            #otp_router.transfer_nodes.calc_initial_weight()
-            otp_router.calc_vertex_weights()
-            otp_router.create_polyline_features()
-            otp_router.create_node_features()
-            self._nodes_have_been_weighted = otp_router.nodes_have_been_weighted
-            self._extent = otp_router.extent
-            otp_router.dump(pickle_path)
-            self.remove_output()
-            #transfer_nodes = otp_router.transfer_nodes
-            #transfer_nodes.assign_weights_to_routes()
-            #otp_router.create_polyline_features()
-            #os.remove(pickle_path)
-
-    def remove_output(self):
-        mxd = arcpy.mapping.MapDocument("CURRENT")
-        df = arcpy.mapping.ListDataFrames(mxd, "*")[0]
-        layers1 = arcpy.mapping.ListLayers(mxd, "Zielpunkte*", df)
-        layers2 = arcpy.mapping.ListLayers(mxd, "*Fahrten*", df)
-        if layers1:
-            self._transfernodes_layer_exsists = True
-        layers = sum([layers2], [])
-        for layer in layers:
-            arcpy.mapping.RemoveLayer(df, layer)
-        del(mxd)
 
 class TbxSettings(Tbx):
 
@@ -152,7 +100,6 @@ class TbxSettings(Tbx):
         if wege_e == 0:
             params.einzelhandel_wege.enabled = False
             params.einzelhandel_pkw.enabled = False
-
 
     def _getParameterInfo(self):
         params = self.par
@@ -238,15 +185,3 @@ class TbxSettings(Tbx):
     def _updateParameters(self, params):
         return
 
-if __name__ == "__main__":
-    t = TbxSettings()
-    t.getParameterInfo()
-    t.par.wohnen_wege.value = 1000
-    t.par.wohnen_pkw.value = 50
-    t.par.gewerbe_wege.value = 2000
-    t.par.gewerbe_pkw.value = 30
-    t.par.einzelhandel_wege.value = 3000
-    t.par.einzelhandel_pkw.value = 60
-    t.par.project.value = t.config.active_project
-    t.execute()
-    print("done")
