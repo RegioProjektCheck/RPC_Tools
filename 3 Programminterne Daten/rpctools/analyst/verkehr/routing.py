@@ -14,7 +14,6 @@ class Routing(Tool):
     _param_projectname = 'project'
     _outer_circle = 2000
     _n_segments = 24
-    _extent = (0.0, 0.0, 0.0, 0.0)
 
     def add_outputs(self):
         # Add Layers
@@ -31,7 +30,7 @@ class Routing(Tool):
                               template_folder='Verkehr',
                               name='Herkunfts-/Zielpunkte',
                               symbology_classes=(10, 'weight'),
-                              zoom=True, zoom_extent=self._extent)
+                              zoom=True)
 
     def run(self):
         self.calculate_transfer_nodes()

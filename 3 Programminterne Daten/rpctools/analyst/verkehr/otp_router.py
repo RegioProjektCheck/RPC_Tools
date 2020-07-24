@@ -628,7 +628,7 @@ class OTPRouter(object):
     def get_transfer_node_features(self):
         """get a dataframe containing the point-features from
         the transfer nodes"""
-        fields = ['node_id', 'weight', 'SHAPE', 'name']
+        fields = ['node_id', 'weight', 'SHAPE', 'Name']
         df = pd.DataFrame(columns=fields)
         counter = 1
         i = 0
