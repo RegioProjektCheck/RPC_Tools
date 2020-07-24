@@ -30,6 +30,7 @@ class Routing(Tool):
                               featureclass='Zielpunkte',
                               template_folder='Verkehr',
                               name='Herkunfts-/Zielpunkte',
+                              symbology_classes=(10, 'weight'),
                               zoom=True, zoom_extent=self._extent)
 
     def run(self):
